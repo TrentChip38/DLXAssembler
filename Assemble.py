@@ -1,4 +1,16 @@
 import sys
+import csv
+opCodes = {}
+
+with open('DLXPairs.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        #Add instruction name with its number (decimal)
+        opCodes[row['Instruction']] = int(row['Decimal'])
+
+# Check opcodes
+# for opCode in opCodes:
+#     print(f"{opCode}: {opCodes[opCode]}")
 
 def writeHeader(file, depth, width):
     file.write(f"DEPTH = {depth};\n")
@@ -41,11 +53,11 @@ with open(sourceFile, 'r') as file:
         address = 0
         # Loop through each line
         for line in file:
-            #Dont do nothing with comments
-            if line.startswith(';'):
-                continue
             # Strip whitespace from the end of the line
             lineC = line.strip()
+            #Dont do nothing with comments
+            if lineC.startswith(';'):
+                continue
 
             # Skip any empty lines
             if not lineC:
@@ -73,13 +85,14 @@ with open(sourceFile, 'r') as file:
                 #If more stuff Store in data and do increment
                 lineCmd = lineC.replace(',', ' ')
                 dataInst.append(lineCmd.split())
+                #Add variables to label as well!!!
+                labels.append([lineCmd.split()[0], address])
                 address += 1
                 continue
 
             # Replace all commas with a single space
             lineCmd = lineC.replace(',', ' ')
             # Split the line into a list of items
-            # By default, split() uses any whitespace (spaces, tabs) as a delimiter
             instructions = (lineCmd.split())
             #Store in data or text variables
             codeInst.append(instructions)
@@ -116,7 +129,110 @@ with open(dataFile, 'w') as dataOut:
             address += 1
     dataOut.write(f"\nEND;")
 
+#Bit masks or shifts?
+opCodeMask  =   0b11111100000000000000000000000000 # << 26
+reg1Mask    =   0b00000011111000000000000000000000 # << 21
+reg2Mask    =   0b00000000000111110000000000000000 # << 16
+reg3Mask    =   0b00000000000000001111100000000000 # << 11
+unusedMask  =   0b00000000000000000000011111111111 # << 0
+immMask     =   0b00000000000000001111111111111111 # << 0
+absAddrMask =   0b00000011111111111111111111111111 # << 0
+opCodeShift  =   26
+reg1Shift    =   21
+reg2Shift    =   16
+reg3Shift    =   11
+unusedShift  =   0
+immShift     =   0
+absAddrShift =   0
+baseAddrShift=   0
+with open(codeFile, 'w') as codeOut:
+    address = 0
+    #Write header
+    writeHeader(codeOut, 1024, 32)
+    #write all the stuff
+    for index, line in enumerate(codeInst):
+        #Find the Binary for each instruction
+        #Get opcode
+        opCodeText = line[0]
+        opcode = opCodes.get(opCodeText)
+        print(opcode)
+        #If all are operanda are registers it is Register type
+        #If one operand is an emmediate value (number?) it is Immediate type
+        #If it modifies the program counter is is Jump type
+        #Load/store data, memory to/from register is memory type
+        instructionCode = 0
+        params = []
+        param = 0
+        #Need to check for labels and variables(indexed)
+        for i in range(len(line) - 1):
+            #Figure out if reg number or actual number or label address or variable address
+            isArray = False
+            varName = line[i + 1].split('(')[0]
+            for label in labels:
+                if varName in label and '(' in line[i + 1]:
+                    isArray = True
+                    break
+            #If array variable with index
+            if isArray:
+                #If reg value indexed then find val
+                #And find the address of that index of this var
+                param = 0
+            elif line[i + 1] in [label[0] for label in labels]:
+                #Labels or single variable
+                for label in labels:
+                    if line[i + 1] == label[0]:
+                        param = label[1]
+                        break
+            elif line[i + 1].startswith('R'):
+                #Register
+                param = int(line[i + 1][1:])
+            elif line[i + 1].isnumeric() or (line[i + 1][0] == '-' and line[i + 1][1:].isnumeric()):
+                #Immediate number
+                param = int(line[i + 1])
+            params.append(int(param))
+        #Everything gets op code
+        instructionCode |= (opcode << opCodeShift)
+        if opCodeText in ['NOP']:
+            #Stays zero
+            instructionCode = 0
+        #We could check the 2 load/store op codes,
+        if opCodeText in ['LW', 'SW']:
+            #Memeory type has opcode, r_data, r_offset, base_address
+            instructionCode |= (params[0] << reg1Shift)  # r_data
+            instructionCode |= (params[1] << reg2Shift)  # r_offset
+            if len(params) > 2:
+                instructionCode |= (params[2] << baseAddrShift)  # base_address
+        #then check for the 4-6 jump/branch op codes,
+        elif opCodeText in ['J', 'JAL', 'BEQ', 'BNE', 'BLT', 'BGT']:
+            #Jump type has opcode, absolute_address
+            instructionCode |= (params[0] << absAddrShift)  # absolute_address
+        #then check for I in code
+        elif opCodeText in ['ADDI', 'ANDI', 'ORI', 'XORI', 'SLTI']:
+            #Immediate type has opcode, rd, rs1, immediate
+            instructionCode |= (params[0] << reg1Shift)  # rd
+            instructionCode |= (params[1] << reg2Shift)  # rs1
+            instructionCode |= (params[2] << immShift)   # immediate
+        #Else assume register type
+        else:
+            #Register type has opcode, rd, rs1, rs2, unused
+            instructionCode |= (params[0] << reg1Shift)  # rd
+            if len(params) > 1:
+                instructionCode |= (params[1] << reg2Shift)  # rs1
+            if len(params) > 2:
+                instructionCode |= (params[2] << reg3Shift)  # rs2
+            #instructionCode |= (0 << unusedShift)        # unused
 
+        #Print out each line
+        codeOut.write(f'{address:03X}')
+        codeOut.write(" : ")
+        codeOut.write(f'{int(instructionCode):08X}')
+        codeOut.write(";")
+        codeOut.write(" --")
+        for i in range(len(line)):
+            codeOut.write(line[i] + " ")
+        codeOut.write("\n")
+        address += 1
+    codeOut.write(f"\nEND;")
 
 
 
