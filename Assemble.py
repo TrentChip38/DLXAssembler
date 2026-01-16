@@ -91,7 +91,7 @@ with open(sourceFile, 'r') as file:
                 dataInst.append(lineCmd.split())
                 #Add variables to label as well!!!
                 labels.append([lineCmd.split()[0], address])
-                address += 1
+                address += int(lineCmd.split()[1])
                 continue
 
             # Split the line into a list of items
