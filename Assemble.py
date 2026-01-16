@@ -75,6 +75,11 @@ with open(sourceFile, 'r') as file:
                 text = 1
                 continue
 
+            # Replace all Parenthese with a single space
+            lineCmd = lineC.replace('(', ' ')
+            lineCmd = lineCmd.replace(')', ' ')
+            # Replace all commas with a single space
+            lineCmd = lineCmd.replace(',', ' ')
             #Is label if there was no whitespace at beginning
             if len(lineC.split()) == 1 and text == 1:
                 #Means it is a simple label
@@ -83,15 +88,12 @@ with open(sourceFile, 'r') as file:
                 continue
             elif data == 1:
                 #If more stuff Store in data and do increment
-                lineCmd = lineC.replace(',', ' ')
                 dataInst.append(lineCmd.split())
                 #Add variables to label as well!!!
                 labels.append([lineCmd.split()[0], address])
                 address += 1
                 continue
 
-            # Replace all commas with a single space
-            lineCmd = lineC.replace(',', ' ')
             # Split the line into a list of items
             instructions = (lineCmd.split())
             #Store in data or text variables
@@ -166,18 +168,19 @@ with open(codeFile, 'w') as codeOut:
         #Need to check for labels and variables(indexed)
         for i in range(len(line) - 1):
             #Figure out if reg number or actual number or label address or variable address
-            isArray = False
-            varName = line[i + 1].split('(')[0]
-            for label in labels:
-                if varName in label and '(' in line[i + 1]:
-                    isArray = True
-                    break
-            #If array variable with index
-            if isArray:
-                #If reg value indexed then find val
-                #And find the address of that index of this var
-                param = 0
-            elif line[i + 1] in [label[0] for label in labels]:
+            # isArray = False
+            # varName = line[i + 1].split('(')[0]
+            # for label in labels:
+            #     if varName in label and '(' in line[i + 1]:
+            #         isArray = True
+            #         break
+            # #If array variable with index
+            # if isArray:
+            #     #If reg value indexed then find val
+            #     #And find the address of that index of this var
+            #     param = 0
+            #Split by '(' to get parameters
+            if line[i + 1] in [label[0] for label in labels]:
                 #Labels or single variable
                 for label in labels:
                     if line[i + 1] == label[0]:
@@ -186,7 +189,7 @@ with open(codeFile, 'w') as codeOut:
             elif line[i + 1].startswith('R'):
                 #Register
                 param = int(line[i + 1][1:])
-            elif line[i + 1].isnumeric() or (line[i + 1][0] == '-' and line[i + 1][1:].isnumeric()):
+            elif line[i + 1].isnumeric():# or (line[i + 1][0] == '-' and line[i + 1][1:].isnumeric()):
                 #Immediate number
                 param = int(line[i + 1])
             params.append(int(param))
@@ -196,18 +199,28 @@ with open(codeFile, 'w') as codeOut:
             #Stays zero
             instructionCode = 0
         #We could check the 2 load/store op codes,
-        if opCodeText in ['LW', 'SW']:
+        elif opCodeText in ['LW']:
             #Memeory type has opcode, r_data, r_offset, base_address
             instructionCode |= (params[0] << reg1Shift)  # r_data
-            instructionCode |= (params[1] << reg2Shift)  # r_offset
+            instructionCode |= (params[1] << baseAddrShift)
             if len(params) > 2:
-                instructionCode |= (params[2] << baseAddrShift)  # base_address
+                instructionCode |= (params[2] << reg2Shift)
+        elif opCodeText in ['SW']:
+            #Memeory type has opcode, r_data, r_offset, base_address
+            instructionCode |= (params[0] << baseAddrShift) 
+            if len(params) > 2:
+                instructionCode |= (params[1] << reg2Shift)  # r_offset
+                instructionCode |= (params[2] << reg1Shift)
+            else:
+                instructionCode |= (params[1] << reg1Shift)  # r_data
         #then check for the 4-6 jump/branch op codes,
-        elif opCodeText in ['J', 'JAL', 'BEQ', 'BNE', 'BLT', 'BGT']:
+        elif opCodeText in ['J', 'JR', 'JAL', 'JALR', 'BEQZ', 'BNEZ']:
             #Jump type has opcode, absolute_address
             instructionCode |= (params[0] << absAddrShift)  # absolute_address
+            if len(params) > 1:
+                instructionCode |= (params[1] << reg1Shift)  # rs1
         #then check for I in code
-        elif opCodeText in ['ADDI', 'ANDI', 'ORI', 'XORI', 'SLTI']:
+        elif opCodeText in ['ADDI', 'ADDUI', 'SUBI', 'SUBUI', 'ANDI', 'ORI', 'XORI', 'SLLI', 'SRLI', 'SRAI', 'SLTI', 'SLTUI', 'SGTI', 'SGTUI', 'SLEI', 'SLEUI', 'SGEI', 'SGEUI', 'SEQI', 'SNEI']:
             #Immediate type has opcode, rd, rs1, immediate
             instructionCode |= (params[0] << reg1Shift)  # rd
             instructionCode |= (params[1] << reg2Shift)  # rs1
