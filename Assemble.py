@@ -214,11 +214,12 @@ with open(codeFile, 'w') as codeOut:
             else:
                 instructionCode |= (params[1] << reg1Shift)  # r_data
         #then check for the 4-6 jump/branch op codes,
-        elif opCodeText in ['J', 'JR', 'JAL', 'JALR', 'BEQZ', 'BNEZ']:
+        elif opCodeText in ['J', 'JR', 'JAL', 'JALR']:
             #Jump type has opcode, absolute_address
             instructionCode |= (params[0] << absAddrShift)  # absolute_address
-            if len(params) > 1:
-                instructionCode |= (params[1] << reg1Shift)  # rs1
+        elif opCodeText in ['BEQZ', 'BNEZ']:
+                instructionCode |= (params[0] << reg1Shift)  # rs1
+                instructionCode |= (params[1] << immShift)  # absolute_address/Immeditate
         #then check for I in code
         elif opCodeText in ['ADDI', 'ADDUI', 'SUBI', 'SUBUI', 'ANDI', 'ORI', 'XORI', 'SLLI', 'SRLI', 'SRAI', 'SLTI', 'SLTUI', 'SGTI', 'SGTUI', 'SLEI', 'SLEUI', 'SGEI', 'SGEUI', 'SEQI', 'SNEI']:
             #Immediate type has opcode, rd, rs1, immediate
