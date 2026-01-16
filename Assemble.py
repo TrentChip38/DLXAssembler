@@ -168,18 +168,6 @@ with open(codeFile, 'w') as codeOut:
         #Need to check for labels and variables(indexed)
         for i in range(len(line) - 1):
             #Figure out if reg number or actual number or label address or variable address
-            # isArray = False
-            # varName = line[i + 1].split('(')[0]
-            # for label in labels:
-            #     if varName in label and '(' in line[i + 1]:
-            #         isArray = True
-            #         break
-            # #If array variable with index
-            # if isArray:
-            #     #If reg value indexed then find val
-            #     #And find the address of that index of this var
-            #     param = 0
-            #Split by '(' to get parameters
             if line[i + 1] in [label[0] for label in labels]:
                 #Labels or single variable
                 for label in labels:
@@ -227,7 +215,7 @@ with open(codeFile, 'w') as codeOut:
             instructionCode |= (params[1] << reg2Shift)  # rs1
             instructionCode |= (params[2] << immShift)   # immediate
         #Else assume register type
-        else:
+        elif opCodeText in opCodes:
             #Register type has opcode, rd, rs1, rs2, unused
             instructionCode |= (params[0] << reg1Shift)  # rd
             if len(params) > 1:
@@ -235,6 +223,10 @@ with open(codeFile, 'w') as codeOut:
             if len(params) > 2:
                 instructionCode |= (params[2] << reg3Shift)  # rs2
             #instructionCode |= (0 << unusedShift)        # unused
+        else:
+            raise ValueError(f"Error: Unknown instruction '{opCodeText}' at line {index + 1}")
+            # print(f"Error: Unknown instruction '{opCodeText}' at line {index + 1}")
+            # instructionCode = 0
 
         #Print out each line
         codeOut.write(f'{address:03X}')
@@ -247,7 +239,3 @@ with open(codeFile, 'w') as codeOut:
         codeOut.write("\n")
         address += 1
     codeOut.write(f"\nEND;")
-
-
-
-
