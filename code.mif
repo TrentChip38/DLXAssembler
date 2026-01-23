@@ -5,19 +5,20 @@ DATA_RADIX = HEX;
 CONTENT
 BEGIN
 
-000 : AC00000E; --BEQZ n exit 
-001 : 10200001; --ADDI R1 R0 1 ;R1 = 1? //i 
-002 : 10600001; --ADDI R3 R0 1 ;R3 = 1? //prevresult 
+000 : AC000009; --BEQZ n exit 
+001 : 10200001; --ADDI R1 R0 1 ;R1 = 1 //i 
+002 : 10600001; --ADDI R3 R0 1 ;R3 = 1 //prevresult 
 003 : 88810000; --SLEUI R4 R1 n ; i <= n 
-004 : AC80000E; --BEQZ R4 end_n_loop ;If ! i<=n leave loop 
+004 : AC800009; --BEQZ R4 end_n_loop ;If ! i<=n leave loop 
 005 : 10610000; --ADDI R3 f 0 ;R3 = f 
-006 : 10400001; --ADDI R2 R0 1 ;R2 = 1? //j = 1 
-007 : 94820800; --SGEU R4 R2 R1 ; j >= i 
-008 : B080000C; --BNEZ R4 end_j_loop ;End loop if condition 
-009 : 0C211800; --ADD f f R3 ;result += prevresult 
-00A : 10420001; --ADDI R2 R2 1 ;j++ 
-00B : B4000007; --J j_loop 
-00C : 10210001; --ADDI R1 R1 1 ;i++ 
-00D : B4000003; --J n_loop 
+006 : BC00000A; --JAL j_loop ;Multiply prevresult by i 
+007 : 10210001; --ADDI R1 R1 1 ;i++ 
+008 : B4000003; --J n_loop 
+009 : 10400001; --ADDI R2 R0 1 ;R2 = 1 //j = 1 
+00A : 94820800; --SGEU R4 R2 R1 ; j >= i 
+00B : B080001F; --BNEZ R4 R31 ;Ending loop if condition 
+00C : 0C211800; --ADD f f R3 ;result += prevresult 
+00D : 10420001; --ADDI R2 R2 1 ;j++ 
+00E : B400000A; --J j_loop 
 
 END;

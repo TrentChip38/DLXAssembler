@@ -1,4 +1,7 @@
-    .data
+;Factorial calculation program in DLX assembly
+
+
+   .data
 
 n   1   5
 f   1   1
@@ -7,13 +10,14 @@ f   1   1
     .text
 
     ;Check if less than 0?
+
     ;Check if zero, go to exit
     BEQZ n exit
     ;If not zero, it continues
 ;Make some vars to use
-    ADDI R1, R0, 1 ;R1 = 1 //i
+    ADDI R1, R0, 1 ;R1 = 1? //i
     ;R2 is set in the loop, its j
-    ADDI R3, R0, 1 ;R3 = 1 //prevresult
+    ADDI R3, R0, 1 ;R3 = 1? //prevresult
     ;R4 is used for jump condition
 n_loop
 ;Loop for amount of n
@@ -35,7 +39,7 @@ exit
 
 ;All of this is multiply func
 start_j
-    ADDI R2, R0, 1 ;R2 = 1 //j = 1
+    ADDI R2, R0, 1 ;R2 = 1? //j = 1
 j_loop
     ;Multiply prevresult(R3) by i(R1)
     ;By looping for (int j = 1; j < i; j++) adding R3 to f
