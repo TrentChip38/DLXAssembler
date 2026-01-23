@@ -1,8 +1,26 @@
     .data
 
 n   1   5
-f   1   0
+f   1   1
+;Start f at 1 for if we get n = 0
 
     .text
 
+    ;Check if less than 0?
+
+    ;Check if zero, go to end
+    BEQZ n exit
+    ;If not zero, it continues
+    ;Make some vars to use
+    ADDI R1, R0, 1 ;R1 = 1? //i
+    ADDI R2, R0, 1 ;R2 = 1? //J
+    ADDI R3, R0, 1 ;R3 = 1? //prevresult
+n_loop
+    ;Loop for amount of n
+    ;If i isn't <= n then branch down past This
     
+end_n_loop
+
+
+
+exit
