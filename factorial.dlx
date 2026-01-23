@@ -11,21 +11,32 @@ f   1   1
     ;Check if zero, go to end
     BEQZ n exit
     ;If not zero, it continues
-    ;Make some vars to use
+;Make some vars to use
     ADDI R1, R0, 1 ;R1 = 1? //i
-    ADDI R2, R0, 1 ;R2 = 1? //J
+    ;R2 is set in the loop, its j
     ADDI R3, R0, 1 ;R3 = 1? //prevresult
+    ;R4 is used for jump condition
 n_loop
-    ;Loop for amount of n
+;Loop for amount of n
     ;If i isn't <= n then branch down past This
-    SLEUI R0, R1, n ; (i <= n)
-    BEQZ R0 end_n_loop ;If !(i<=n) leave loop
+    SLEUI R4, R1, n ; (i <= n)
+    BEQZ R4 end_n_loop ;If !(i<=n) leave loop
     ;Else, continue loop
     ADDI R3, f, 0 ;R3 = f
     ;Now loop for (int j = 1; j < i; j++) adding R3 to f
-
+    ADDI R2, R0, 1 ;R2 = 1? //j = 1
+j_loop
+    ;If j = i, branch
+    SGEU R4, R2, R1 ;(j >= i)
+    BNEZ R4, end_j_loop ;End loop if condition
+    ADD f, f, R3 ;result += prevresult
+    ADDI R2, R2, 1 ;j++
+    J j_loop
+end_j_loop
     ;End of main loop
     ADDI R1, R1, 1 ;i++
+    ;back to beggining of outer loop
+    J n_loop
 end_n_loop
 
 
