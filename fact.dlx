@@ -1,0 +1,32 @@
+.data
+
+n	1	5
+f	1	1
+
+.text
+
+	LW	R11, n(R0)	;R11 is the original value
+	LW 	R10, f(R0)	;R10 is the current result
+	ADDI	R1, R0, 1	;R1 is a counter 'i'
+	ADDI	R3, R0, 1	;R3 is prevresult
+n_loop
+	SLEUI	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
+	BEQZ	R9, result	;if R9 = 0 end loop
+	ADDI R3, R10, 0 ;R3 = current result
+	JAL	j_loop_start	;Jump to multiplication loop
+	ADDI	R1, R1, 1	;i++
+	J	n_loop
+result
+	SW	R10, f(R0)	;Store result in f(0)
+done
+	J	done
+j_loop_start
+	ADDI R2, R0, 1	;R2 is a counter 'j'
+j_loop
+	SGEU R4, R2, R1	;if j(R2) >= i(R1) then R4 = 1
+    BNEZ R4, end_j_loop	;Ending loop if condition
+    ADD R10, R10, R3	;result += prevresult
+    ADDI R2, R2, 1	;j++
+    J j_loop
+end_j_loop
+	JR	R31

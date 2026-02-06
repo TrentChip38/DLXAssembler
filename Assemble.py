@@ -206,7 +206,7 @@ with open(codeFile, 'w') as codeOut:
             #Jump type has opcode, absolute_address
             instructionCode |= (params[0] << absAddrShift)  # absolute_address
         elif opCodeText in ['BEQZ', 'BNEZ']:
-                instructionCode |= (params[0] << reg1Shift)  # rs1
+                instructionCode |= (params[0] << reg2Shift)  # rs1
                 instructionCode |= (params[1] << immShift)  # absolute_address/Immeditate
         #then check for I in code
         elif opCodeText in ['ADDI', 'ADDUI', 'SUBI', 'SUBUI', 'ANDI', 'ORI', 'XORI', 'SLLI', 'SRLI', 'SRAI', 'SLTI', 'SLTUI', 'SGTI', 'SGTUI', 'SLEI', 'SLEUI', 'SGEI', 'SGEUI', 'SEQI', 'SNEI']:
