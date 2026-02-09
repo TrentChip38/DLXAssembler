@@ -18,12 +18,12 @@ with open('DLXPairs.csv', newline='') as csvfile:
             name = name + "c"
         opCodes[name] = int(row['Decimal'])
 
-sourceFile = "opCodes.txt"
+outFile1 = "opCodes.txt"
+outFile2 = "opCase.txt"
 # Find the longest instruction name
 max_len = max(len(name) for name in opCodes)
 
-with open(sourceFile, 'w') as file:
-        address = 0
+with open(outFile1, 'w') as file:
         # Loop through all op codes
         for opCode in opCodes:
             #Write the line to the file
@@ -33,3 +33,12 @@ with open(sourceFile, 'w') as file:
             padded_name = opCode.ljust(max_len)
             vhdl_line = f'    constant {padded_name} : std_logic_vector(5 downto 0) := "{format(opCodes[opCode], "06b")}";\n'
             file.write(vhdl_line)
+            
+with open(outFile2, 'w') as file:
+        # Loop through all op codes
+        for opCode in opCodes:
+            #Write case outline for each op code
+            file.write("						    when " + opCode + " =>\n")
+            # padded_name = opCode.ljust(max_len)
+            # vhdl_line = f'    constant {padded_name} : std_logic_vector(5 downto 0) := "{format(opCodes[opCode], "06b")}";\n'
+            # file.write(vhdl_line)
