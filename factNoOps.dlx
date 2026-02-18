@@ -1,0 +1,98 @@
+.data
+
+n	1	5
+f	1	1
+
+.text
+
+	LW	R11, n(R0)	;R11 is the original value
+	NOP
+	NOP
+	NOP
+	LW 	R10, f(R0)	;R10 is the current result
+	NOP
+	NOP
+	NOP
+	ADDI	R1, R0, 1	;R1 is a counter 'i'
+	NOP
+	NOP
+	NOP
+	ADDI	R3, R0, 1	;R3 is prevresult
+	NOP
+	NOP
+	NOP
+n_loop
+	SLEUI	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	BEQZ	R9, result	;if R9 = 0 end loop
+	NOP
+	NOP
+	NOP
+	ADDI R3, R10, 0 ;R3 = current result
+	NOP
+	NOP
+	NOP
+	JAL	j_loop_start	;Jump to multiplication loop
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	ADDI	R1, R1, 1	;i++
+	NOP
+	NOP
+	NOP
+	J	n_loop
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+result
+	SW	R10, f(R0)	;Store result in f(0)
+	NOP
+	NOP
+	NOP
+done
+	J	done
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+j_loop_start
+	ADDI R2, R0, 1	;R2 is a counter 'j'
+	NOP
+	NOP
+	NOP
+j_loop
+	SGEU R4, R2, R1	;if j(R2) >= i(R1) then R4 = 1
+	NOP
+	NOP
+	NOP
+    BNEZ R4, end_j_loop	;Ending loop if condition
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+    ADD R10, R10, R3	;result += prevresult
+	NOP
+	NOP
+	NOP
+    ADDI R2, R2, 1	;j++
+	NOP
+	NOP
+	NOP
+    J j_loop
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+end_j_loop
+	JR	R31
