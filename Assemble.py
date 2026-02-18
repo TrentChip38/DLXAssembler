@@ -84,8 +84,9 @@ with open(sourceFile, 'r') as file:
             if len(lineC.split()) == 1 and text == 1:
                 #Means it is a simple label
                 #Store current address as label
-                labels.append([lineC, address])
-                continue
+                if lineC not in opCodes:
+                    labels.append([lineC, address])
+                    continue
             elif data == 1:
                 #If more stuff Store in data and do increment
                 dataInst.append(lineCmd.split())
