@@ -10,7 +10,7 @@ f	1	1
 	ADDI	R1, R0, 1	;R1 is a counter 'i'
 	ADDI	R3, R0, 1	;R3 is prevresult
 n_loop
-	SLEUI	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
+	SLEU	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
 	BEQZ	R9, result	;if R9 = 0 end loop
 	ADDI R3, R10, 0 ;R3 = current result
 	JAL	j_loop_start	;Jump to multiplication loop

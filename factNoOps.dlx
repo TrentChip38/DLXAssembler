@@ -22,7 +22,7 @@ f	1	1
 	NOP
 	NOP
 n_loop
-	SLEUI	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
+	SLEU	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
 	NOP
 	NOP
 	NOP
