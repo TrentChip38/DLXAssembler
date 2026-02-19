@@ -202,10 +202,13 @@ with open(codeFile, 'w') as codeOut:
                 instructionCode |= (params[2] << reg1Shift)
             else:
                 instructionCode |= (params[1] << reg1Shift)  # r_data
-        #then check for the 4-6 jump/branch op codes,
-        elif opCodeText in ['J', 'JR', 'JAL', 'JALR']:
+        #then check for jump op codes,
+        elif opCodeText in ['J', 'JAL']:
             #Jump type has opcode, absolute_address
             instructionCode |= (params[0] << absAddrShift)  # absolute_address
+        elif opCodeText in ['JR', 'JALR']:
+            #Jump type has opcode, register value
+            instructionCode |= (params[0] << reg2Shift)  # rs1
         elif opCodeText in ['BEQZ', 'BNEZ']:
                 instructionCode |= (params[0] << reg2Shift)  # rs1
                 instructionCode |= (params[1] << immShift)  # absolute_address/Immeditate
