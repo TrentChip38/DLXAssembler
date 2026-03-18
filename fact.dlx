@@ -2,8 +2,20 @@
 
 n	1	5
 f	1	1
+;This is just "Welcome" to test. I think it is decimal, not hex?
+s	7 87 101 108 99 111 109 101
+;Full phrase is s	87 101 108 99 111 109 101 32 116 111 32 116 104 101 32 68 76 88 32 102 97 99 116 111 114 105 97 108 32 112 114 111 103 114 97 109 33
 
 .text
+	;Loop to print phrase
+	ADDI	R20, R0, 0		;index = 0
+	ADDI	R22, R0, 7		;string size = 7
+s_loop
+	LW  	R21, s(R20)		;load char at index
+	ADDI	R20, R20, 1		;index ++
+	PCH 	R21				;Print that char
+	SLEU R4, R20, R22		;if index <= string size
+	BNEZ R4, s_loop			;go back to top of loop
 
 	LW	R11, n(R0)	;R11 is the original value
 	LW 	R10, f(R0)	;R10 is the current result

@@ -5,90 +5,31 @@ DATA_RADIX = HEX;
 CONTENT
 BEGIN
 
-000 : 05600000; --LW R11 n R0 ;R11 is the original value 
-001 : 00000000; --NOP 
-002 : 00000000; --NOP 
-003 : 00000000; --NOP 
-004 : 05400001; --LW R10 f R0 ;R10 is the current result 
-005 : 00000000; --NOP 
-006 : 00000000; --NOP 
-007 : 00000000; --NOP 
-008 : 10200001; --ADDI R1 R0 1 ;R1 is a counter 'i' 
-009 : 00000000; --NOP 
-00A : 00000000; --NOP 
-00B : 00000000; --NOP 
-00C : 10600001; --ADDI R3 R0 1 ;R3 is prevresult 
-00D : 00000000; --NOP 
-00E : 00000000; --NOP 
-00F : 00000000; --NOP 
-010 : 85215800; --SLEU R9 R1 R11 ;if i R1 <= value R11 then R9 = 1 
-011 : 00000000; --NOP 
-012 : 00000000; --NOP 
-013 : 00000000; --NOP 
-014 : 00000000; --NOP 
-015 : 00000000; --NOP 
-016 : AC09002E; --BEQZ R9 result ;if R9 = 0 end loop 
-017 : 00000000; --NOP 
-018 : 00000000; --NOP 
-019 : 00000000; --NOP 
-01A : 106A0000; --ADDI R3 R10 0 ;R3 = current result 
-01B : 00000000; --NOP 
-01C : 00000000; --NOP 
-01D : 00000000; --NOP 
-01E : BC000038; --JAL j_loop_start ;Jump to multiplication loop 
-01F : 00000000; --NOP 
-020 : 00000000; --NOP 
-021 : 00000000; --NOP 
-022 : 00000000; --NOP 
-023 : 00000000; --NOP 
-024 : 10210001; --ADDI R1 R1 1 ;i++ 
-025 : 00000000; --NOP 
-026 : 00000000; --NOP 
-027 : 00000000; --NOP 
-028 : B4000010; --J n_loop 
-029 : 00000000; --NOP 
-02A : 00000000; --NOP 
-02B : 00000000; --NOP 
-02C : 00000000; --NOP 
-02D : 00000000; --NOP 
-02E : 0801000A; --SW R10 f R0 ;Store result in f 0 
-02F : 00000000; --NOP 
-030 : 00000000; --NOP 
-031 : 00000000; --NOP 
-032 : B4000032; --J done 
-033 : 00000000; --NOP 
-034 : 00000000; --NOP 
-035 : 00000000; --NOP 
-036 : 00000000; --NOP 
-037 : 00000000; --NOP 
-038 : 10400001; --ADDI R2 R0 1 ;R2 is a counter 'j' 
-039 : 00000000; --NOP 
-03A : 00000000; --NOP 
-03B : 00000000; --NOP 
-03C : 94820800; --SGEU R4 R2 R1 ;if j R2 >= i R1 then R4 = 1 
-03D : 00000000; --NOP 
-03E : 00000000; --NOP 
-03F : 00000000; --NOP 
-040 : B0040054; --BNEZ R4 end_j_loop ;Ending loop if condition 
-041 : 00000000; --NOP 
-042 : 00000000; --NOP 
-043 : 00000000; --NOP 
-044 : 00000000; --NOP 
-045 : 00000000; --NOP 
-046 : 0D4A1800; --ADD R10 R10 R3 ;result += prevresult 
-047 : 00000000; --NOP 
-048 : 00000000; --NOP 
-049 : 00000000; --NOP 
-04A : 10420001; --ADDI R2 R2 1 ;j++ 
-04B : 00000000; --NOP 
-04C : 00000000; --NOP 
-04D : 00000000; --NOP 
-04E : B400003C; --J j_loop 
-04F : 00000000; --NOP 
-050 : 00000000; --NOP 
-051 : 00000000; --NOP 
-052 : 00000000; --NOP 
-053 : 00000000; --NOP 
-054 : B81F0000; --JR R31 
+000 : 12800000; --ADDI R20 R0 0 ;index = 0 
+001 : 12C00007; --ADDI R22 R0 7 ;string size = 7 
+002 : 06B40002; --LW R21 s R20 ;load char at index 
+003 : 12940001; --ADDI R20 R20 1 ;index ++ 
+004 : C4150000; --PCH R21 ;Print that char 
+005 : 8494B000; --SLEU R4 R20 R22 ;if index <= string size 
+006 : B0040002; --BNEZ R4 s_loop ;go back to top of loop 
+007 : 05600000; --LW R11 n R0 ;R11 is the original value 
+008 : 05400001; --LW R10 f R0 ;R10 is the current result 
+009 : 10200001; --ADDI R1 R0 1 ;R1 is a counter 'i' 
+00A : 10600001; --ADDI R3 R0 1 ;R3 is prevresult 
+00B : 85215800; --SLEU R9 R1 R11 ;if i R1 <= value R11 then R9 = 1 
+00C : AC090011; --BEQZ R9 result ;if R9 = 0 end loop 
+00D : 106A0000; --ADDI R3 R10 0 ;R3 = current result 
+00E : BC000013; --JAL j_loop_start ;Jump to multiplication loop 
+00F : 10210001; --ADDI R1 R1 1 ;i++ 
+010 : B400000B; --J n_loop 
+011 : 0801000A; --SW R10 f R0 ;Store result in f 0 
+012 : B4000012; --J done 
+013 : 10400001; --ADDI R2 R0 1 ;R2 is a counter 'j' 
+014 : 94820800; --SGEU R4 R2 R1 ;if j R2 >= i R1 then R4 = 1 
+015 : B0040019; --BNEZ R4 end_j_loop ;Ending loop if condition 
+016 : 0D4A1800; --ADD R10 R10 R3 ;result += prevresult 
+017 : 10420001; --ADDI R2 R2 1 ;j++ 
+018 : B4000014; --J j_loop 
+019 : B81F0000; --JR R31 
 
 END;
