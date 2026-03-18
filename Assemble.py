@@ -187,6 +187,11 @@ with open(codeFile, 'w') as codeOut:
         if opCodeText in ['NOP']:
             #Stays zero
             instructionCode = 0
+        #Adding in writing op codes
+        elif opCodeText in ['PCH', 'PD', 'PDU']:
+            instructionCode |= (params[0] << reg2Shift)  # rs1
+        elif opCodeText in ['PCHI']:
+            instructionCode |= (params[0] << immShift)  # immediate
         #We could check the 2 load/store op codes,
         elif opCodeText in ['LW']:
             #Memeory type has opcode, r_data, r_offset, base_address

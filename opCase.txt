@@ -47,3 +47,7 @@
 						    when JR =>
 						    when JAL =>
 						    when JALR =>
+						    when PCH =>
+						    when PD =>
+						    when PDU =>
+						    when PCHI =>

@@ -48,3 +48,7 @@ Decimal,Hex,Instruction
 46,2E,JR
 47,2F,JAL
 48,30,JALR
+49,31,PCH
+50,32,PD
+51,33,PDU
+52,34,PCHI
