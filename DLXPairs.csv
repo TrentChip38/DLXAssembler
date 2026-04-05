@@ -54,3 +54,6 @@ Decimal,Hex,Instruction
 52,34,PCHI
 53,35,GD
 54,36,GDU
+55,37,TR
+56,38,TGO
+57,38,TSP
