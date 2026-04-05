@@ -52,3 +52,5 @@ Decimal,Hex,Instruction
 50,32,PD
 51,33,PDU
 52,34,PCHI
+53,35,GD
+54,36,GDU

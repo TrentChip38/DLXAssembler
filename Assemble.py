@@ -32,6 +32,7 @@ else:
 
 #Track when we are in data or text section
 data = 0
+const = 0
 text = 0
 dataInst = []
 codeInst = []
@@ -67,11 +68,19 @@ with open(sourceFile, 'r') as file:
             if lineC == ".data":
                 address = 0
                 data = 1
+                const = 0
+                text = 0
+                continue
+            elif lineC == ".const":
+                address = address
+                data = 0
+                const = 1
                 text = 0
                 continue
             elif lineC == ".text":
                 address = 0
                 data = 0
+                const = 0
                 text = 1
                 continue
 
@@ -192,6 +201,9 @@ with open(codeFile, 'w') as codeOut:
             instructionCode |= (params[0] << reg2Shift)  # rs1
         elif opCodeText in ['PCHI']:
             instructionCode |= (params[0] << immShift)  # immediate
+        #Adding in scan op codes
+        elif opCodeText in ['GD', 'GDU']:
+            instructionCode |= (params[0] << reg1Shift)  # rd
         #We could check the 2 load/store op codes,
         elif opCodeText in ['LW']:
             #Memeory type has opcode, r_data, r_offset, base_address

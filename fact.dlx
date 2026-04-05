@@ -1,44 +1,75 @@
 .data
 
-n	1	5
+n	1	6
 f	1	1
-;This is just "Welcome" to test. I think it is decimal, not hex?
-s	7 87 101 108 99 111 109 101
-;Full phrase is s	87 101 108 99 111 109 101 32 116 111 32 116 104 101 32 68 76 88 32 102 97 99 116 111 114 105 97 108 32 112 114 111 103 114 97 109 33
+
+w	42	10 10 13 87 101 108 99 111 109 101 32 116 111 32 116 104 101 32 68 76 88 32 102 97 99 116 111 114 105 97 108 32 112 114 111 103 114 97 109 33 10 13 ;Welcome to the DLX factorial program!
+e	16	69 110 116 101 114 32 97 32 110 117 109 98 101 114 58 32 ;Enter a number: 
 
 .text
-	;Loop to print phrase
+
 	ADDI	R20, R0, 0		;index = 0
-	ADDI	R22, R0, 7		;string size = 7
-s_loop
-	LW  	R21, s(R20)		;load char at index
+	ADDI	R22, R0, 42		;string size = 42
+welcome_loop
+	SLTU R14, R20, R22		;if index < string size
+	BEQZ R14, enter_setup	;Branch if done printing
+	LW  	R21, w(R20)		;load char at index
 	ADDI	R20, R20, 1		;index ++
 	PCH 	R21				;Print that char
-	SLEU R4, R20, R22		;if index <= string size
-	BNEZ R4, s_loop			;go back to top of loop
-
-	LW	R11, n(R0)	;R11 is the original value
-	LW 	R10, f(R0)	;R10 is the current result
+	J	welcome_loop
+enter_setup
+	ADDI	R20, R0, 0		;index = 0
+	ADDI	R22, R0, 16		;string size = 16
+enter_loop
+	SLTU R14, R20, R22		;if index < string size
+	BEQZ R14, rec_num		;Branch if done printing
+	LW  	R21, e(R20)		;load char at index
+	ADDI	R20, R20, 1		;index ++
+	PCH 	R21				;Print that char
+	J	enter_loop
+rec_num
+	;LW R11, n(R0)
+	GD	R11				; Input
+	ADDI R16, R0, 10	; char '\n'
+	ADDI R15, R0, 13	; char '\r'
+	PDU R11				; Print inputed number
+	PCH R15				; '\r'
+	PCH R16				; '\n'
+fact_init
+	ADDI	R10, R0, 1	;R10 initializes as 1
 	ADDI	R1, R0, 1	;R1 is a counter 'i'
-	ADDI	R3, R0, 1	;R3 is prevresult
 n_loop
 	SLEU	R9, R1, R11	;if i(R1) <= value(R11) then R9 = 1
 	BEQZ	R9, result	;if R9 = 0 end loop
-	ADDI R3, R10, 0 ;R3 = current result
+	ADDI R3, R10, 0 	;R3 = current result
 	JAL	j_loop_start	;Jump to multiplication loop
 	ADDI	R1, R1, 1	;i++
 	J	n_loop
 result
-	SW	R10, f(R0)	;Store result in f(0)
+	ADDI R19, R0, 33	; char '!'
+	ADDI R18, R0, 61	; char '='
+	ADDI R17, R0, 32	; char ' '
+	ADDI R16, R0, 10	; char '\n'
+	ADDI R15, R0, 13	; char '\r'
+	SW	f(R0), R10		; Store result in f(0)
+	PDU	R11				; print original value
+	PCH	R19				; '!'
+	PCH R17				; ' '
+	PCH R18				; '='
+	PCH R17				; ' '
+	PDU R10				; result
+	PCH R16				; '\n'
+	PCH R16				; '\n'
+	PCH R15				; '\r'
 done
 	J	done
 j_loop_start
-	ADDI R2, R0, 1	;R2 is a counter 'j'
+	ADDI R2, R0, 1		;R2 is a counter 'j'
 j_loop
-	SGEU R4, R2, R1	;if j(R2) >= i(R1) then R4 = 1
+	SGEU R4, R2, R1		;if j(R2) >= i(R1) then R4 = 1
     BNEZ R4, end_j_loop	;Ending loop if condition
     ADD R10, R10, R3	;result += prevresult
-    ADDI R2, R2, 1	;j++
+    ADDI R2, R2, 1		;j++
     J j_loop
 end_j_loop
 	JR	R31
