@@ -65,7 +65,7 @@ with open(sourceFile, 'r') as file:
                 continue
 
             #Check for section changes
-            if lineC == ".data":
+            if lineC == ".data" or lineC == ".const":
                 address = 0
                 data = 1
                 const = 0
