@@ -198,8 +198,8 @@ with open(codeFile, 'w') as codeOut:
             instructionCode = 0
         #Stopwatch opcodes
         elif opCodeText in ['TR', 'TGO', 'TSP']:
-            #No operands
-            instructionCode = 0
+            #Nothing changes. Just has opcode and no operands
+            instructionCode = instructionCode
         #Writing op codes
         elif opCodeText in ['PCH', 'PD', 'PDU']:
             instructionCode |= (params[0] << reg2Shift)  # rs1
