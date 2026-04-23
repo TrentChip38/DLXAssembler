@@ -12,6 +12,23 @@ with open('DLXPairs.csv', newline='') as csvfile:
 # for opCode in opCodes:
 #     print(f"{opCode}: {opCodes[opCode]}")
 
+def string_to_ascii_values(s):
+    result = []
+    i = 0
+    while i < len(s):
+        if s[i] == '\\' and i + 1 < len(s):
+            if s[i + 1] == 'n':
+                result.append(str(ord('\n')))  # ASCII 10
+                i += 2
+                continue
+            elif s[i + 1] == 'r':
+                result.append(str(ord('\r')))  # ASCII 13
+                i += 2
+                continue
+        result.append(str(ord(s[i])))
+        i += 1
+    return result
+
 def writeHeader(file, depth, width):
     file.write(f"DEPTH = {depth};\n")
     file.write(f"WIDTH = {width};\n")
@@ -106,13 +123,13 @@ with open(sourceFile, 'r') as file:
                     #We need to parse the string into ASCII character values
                     string = lineCmd.split('"')[1] #Get the string between the quotes
                     #Convert each character to its ASCII value and store it
-                    asciiValues = [str(ord(char)) for char in string]
+                    asciiValues = string_to_ascii_values(string)
                     dataInst.append(lineCmd.split()[0:2] + asciiValues) #Store the variable name, size, and ASCII values
                 else:
                     dataInst.append(lineCmd.split())
                 #Add variables to label as well!!!
                 labels.append([lineCmd.split()[0], address])
-                #print(f"Added label: {lineCmd.split()[0]} with address {address}")
+                #Increment address by size of variable
                 address += int(lineCmd.split()[1])
                 continue
 
