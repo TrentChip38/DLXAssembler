@@ -23,9 +23,12 @@ if len(sys.argv) == 4:
     sourceFile = sys.argv[1]
     dataFile = sys.argv[2]
     codeFile = sys.argv[3]
+elif len(sys.argv) == 2:
+    sourceFile = sys.argv[1]
+    dataFile = sourceFile.split('.')[0] + "_data.mif"
+    codeFile = sourceFile.split('.')[0] + "_code.mif"
 else:
     sourceFile = sys.argv[1]
-    dataFile = sys.argv[2]
     print("Usage: python Assemble.py <sourceFile>.dlx <dataFile>.mif <codeFile>.mif")
     #sys.exit(1)
     #Later add auto file name gen for only one parameter
@@ -98,9 +101,18 @@ with open(sourceFile, 'r') as file:
                     continue
             elif data == 1:
                 #If more stuff Store in data and do increment
-                dataInst.append(lineCmd.split())
+                #If string found in line ("...")
+                if '"' in lineCmd:
+                    #We need to parse the string into ASCII character values
+                    string = lineCmd.split('"')[1] #Get the string between the quotes
+                    #Convert each character to its ASCII value and store it
+                    asciiValues = [str(ord(char)) for char in string]
+                    dataInst.append(lineCmd.split()[0:2] + asciiValues) #Store the variable name, size, and ASCII values
+                else:
+                    dataInst.append(lineCmd.split())
                 #Add variables to label as well!!!
                 labels.append([lineCmd.split()[0], address])
+                #print(f"Added label: {lineCmd.split()[0]} with address {address}")
                 address += int(lineCmd.split()[1])
                 continue
 
@@ -167,7 +179,7 @@ with open(codeFile, 'w') as codeOut:
         #Get opcode
         opCodeText = line[0]
         opcode = opCodes.get(opCodeText)
-        print(opcode)
+        #print(opcode)
         #If all are operanda are registers it is Register type
         #If one operand is an emmediate value (number?) it is Immediate type
         #If it modifies the program counter is is Jump type
