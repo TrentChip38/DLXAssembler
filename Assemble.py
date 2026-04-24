@@ -2,6 +2,10 @@ import sys
 import csv
 opCodes = {}
 
+#Change this if you have given up all hope of handling some hazard and want NOPs literally everywhere (for testing of course)
+addNOPS = 0
+amountNOPS = 3
+
 with open('DLXPairs.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
@@ -137,6 +141,10 @@ with open(sourceFile, 'r') as file:
             instructions = (lineCmd.split())
             #Store in data or text variables
             codeInst.append(instructions)
+            if addNOPS:
+                #Add NOPs after every instruction for testing
+                for i in range(amountNOPS):
+                    codeInst.append(['NOP'])
             address += 1
 
 #Testing
