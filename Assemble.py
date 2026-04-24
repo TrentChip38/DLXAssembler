@@ -3,7 +3,15 @@ import csv
 opCodes = {}
 
 #Change this if you have given up all hope of handling some hazard and want NOPs literally everywhere (for testing of course)
-addNOPS = 0
+addNOPS = 1
+paddStrings = 1
+
+addSpecificNOPS = 0
+badCombos = [['SW', 'LW']]#, ['LW', 'PDU'], ['LW', 'PD'], ['LW', 'PCH']]
+
+addSomeNOPS = 0
+theBadOps = ['GDU', 'GD', 'LW', 'SW']# , 'SW','LW',  'BEQZ', 'BNEZ'
+theBadOpsBefore = ['GDU', 'GD']
 amountNOPS = 3
 
 with open('DLXPairs.csv', newline='') as csvfile:
@@ -128,7 +136,10 @@ with open(sourceFile, 'r') as file:
                     string = lineCmd.split('"')[1] #Get the string between the quotes
                     #Convert each character to its ASCII value and store it
                     asciiValues = string_to_ascii_values(string)
-                    dataInst.append(lineCmd.split()[0:2] + asciiValues) #Store the variable name, size, and ASCII values
+                    if paddStrings:
+                        asciiValues.append('32')#Add space end of each string
+                    stringLength = int(lineCmd.split()[1]) + paddStrings
+                    dataInst.append([lineCmd.split()[0], str(stringLength)] + asciiValues)#Store the variable name, size, and ASCII values
                 else:
                     dataInst.append(lineCmd.split())
                 #Add variables to label as well!!!
@@ -140,12 +151,33 @@ with open(sourceFile, 'r') as file:
             # Split the line into a list of items
             instructions = (lineCmd.split())
             #Store in data or text variables
+            #Add NOPs before certain instructions
+            if (addSomeNOPS or addSpecificNOPS):
+                if instructions[0] in theBadOpsBefore:
+                    for i in range(amountNOPS):
+                        codeInst.append(['NOP'])
+                    address += amountNOPS
             codeInst.append(instructions)
             if addNOPS:
-                #Add NOPs after every instruction for testing
+                #Add NOPs after all instructions
                 for i in range(amountNOPS):
                     codeInst.append(['NOP'])
+                address += amountNOPS
+            elif addSomeNOPS:
+                #Add NOPs after certain instructions
+                if instructions[0] in theBadOps:
+                    for i in range(amountNOPS):
+                        codeInst.append(['NOP'])
+                    address += amountNOPS
             address += 1
+        # i = 0
+        # while i < len(codeInst) - 1:
+        #     for combo in badCombos:
+        #         if codeInst[i][0] == combo[0] and codeInst[i + 1][0] == combo[1]:
+        #             for _ in range(amountNOPS):
+        #                 codeInst.insert(i + 1, ['NOP'])
+        #             i += amountNOPS  # Skip over inserted NOPs
+        #     i += 1
 
 #Testing
 print("Data Instructions:\n")
