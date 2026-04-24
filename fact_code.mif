@@ -1,0 +1,65 @@
+DEPTH = 1024;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+CONTENT
+BEGIN
+
+000 : 12800000; --ADDI R20 R0 0 ;index = 0 
+001 : 12C0002A; --ADDI R22 R0 42 ;string size = 42 
+002 : 65D4B000; --SLTU R14 R20 R22 ;if index < string size 
+003 : AC0E0008; --BEQZ R14 enter_setup ;Branch if done printing 
+004 : 06B40002; --LW R21 w R20 ;load char at index 
+005 : 12940001; --ADDI R20 R20 1 ;index ++ 
+006 : C4150000; --PCH R21 ;Print that char 
+007 : B4000002; --J welcome_loop 
+008 : 12800000; --ADDI R20 R0 0 ;index = 0 
+009 : 12C00010; --ADDI R22 R0 16 ;string size = 16 
+00A : 65D4B000; --SLTU R14 R20 R22 ;if index < string size 
+00B : AC0E0010; --BEQZ R14 rec_num ;Branch if done printing 
+00C : 06B4002C; --LW R21 e R20 ;load char at index 
+00D : 12940001; --ADDI R20 R20 1 ;index ++ 
+00E : C4150000; --PCH R21 ;Print that char 
+00F : B400000A; --J enter_loop 
+010 : D1600000; --GD R11 ; Input 
+011 : 1200000A; --ADDI R16 R0 10 ; char '\n' 
+012 : 11E0000D; --ADDI R15 R0 13 ; char '\r' 
+013 : CC0B0000; --PDU R11 ; Print inputed number 
+014 : C40F0000; --PCH R15 ; '\r' 
+015 : C4100000; --PCH R16 ; '\n' 
+016 : D8000000; --TR 
+017 : DC000000; --TGO 
+018 : 11400001; --ADDI R10 R0 1 ;R10 initializes as 1 
+019 : 10200001; --ADDI R1 R0 1 ;R1 is a counter 'i' 
+01A : 85215800; --SLEU R9 R1 R11 ;if i R1 <= value R11 then R9 = 1 
+01B : AC090020; --BEQZ R9 result ;if R9 = 0 end loop 
+01C : 106A0000; --ADDI R3 R10 0 ;R3 = current result 
+01D : BC000031; --JAL j_loop_start ;Jump to multiplication loop 
+01E : 10210001; --ADDI R1 R1 1 ;i++ 
+01F : B400001A; --J n_loop 
+020 : 12600021; --ADDI R19 R0 33 ; char '!' 
+021 : 1240003D; --ADDI R18 R0 61 ; char '=' 
+022 : 12200020; --ADDI R17 R0 32 ; char ' ' 
+023 : 1200000A; --ADDI R16 R0 10 ; char '\n' 
+024 : 11E0000D; --ADDI R15 R0 13 ; char '\r' 
+025 : 09400001; --SW f R0 R10 ; Store result in f 0 
+026 : CC0B0000; --PDU R11 ; print original value 
+027 : C4130000; --PCH R19 ; '!' 
+028 : C4110000; --PCH R17 ; ' ' 
+029 : C4120000; --PCH R18 ; '=' 
+02A : C4110000; --PCH R17 ; ' ' 
+02B : CC0A0000; --PDU R10 ; result 
+02C : C4100000; --PCH R16 ; '\n' 
+02D : C4100000; --PCH R16 ; '\n' 
+02E : C40F0000; --PCH R15 ; '\r' 
+02F : E0000000; --TSP 
+030 : B4000030; --J done 
+031 : 10400001; --ADDI R2 R0 1 ;R2 is a counter 'j' 
+032 : 94820800; --SGEU R4 R2 R1 ;if j R2 >= i R1 then R4 = 1 
+033 : B0040037; --BNEZ R4 end_j_loop ;Ending loop if condition 
+034 : 0D4A1800; --ADD R10 R10 R3 ;result += prevresult 
+035 : 10420001; --ADDI R2 R2 1 ;j++ 
+036 : B4000032; --J j_loop 
+037 : B81F0000; --JR R31 
+
+END;

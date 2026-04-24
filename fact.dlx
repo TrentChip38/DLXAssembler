@@ -7,7 +7,6 @@ w	42	10 10 13 87 101 108 99 111 109 101 32 116 111 32 116 104 101 32 68 76 88 32
 e	16	69 110 116 101 114 32 97 32 110 117 109 98 101 114 58 32 ;Enter a number: 
 
 .text
-
 	ADDI	R20, R0, 0		;index = 0
 	ADDI	R22, R0, 42		;string size = 42
 welcome_loop
@@ -35,6 +34,8 @@ rec_num
 	PDU R11				; Print inputed number
 	PCH R15				; '\r'
 	PCH R16				; '\n'
+	TR
+	TGO
 fact_init
 	ADDI	R10, R0, 1	;R10 initializes as 1
 	ADDI	R1, R0, 1	;R1 is a counter 'i'
@@ -61,6 +62,7 @@ result
 	PCH R16				; '\n'
 	PCH R16				; '\n'
 	PCH R15				; '\r'
+	TSP
 done
 	J	done
 j_loop_start
