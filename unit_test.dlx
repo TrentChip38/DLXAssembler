@@ -11,7 +11,6 @@ mem_d           1   0
 .const
 
 .text
-    TSP
 start
     ; ------------------------------------------------------------
     ; Clear counters
@@ -98,7 +97,17 @@ start
     NOP
     JAL     check_equal
 
-
+    ; ============================================================
+    ; 5. ADDI
+    ; ============================================================
+    ADDUI   R22, R0, 5
+    ADDI    R20, R10, 7       ; 5 + 7 = 12
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 6. ADDU
@@ -112,7 +121,17 @@ start
     NOP
     JAL     check_equal
 
-
+    ; ============================================================
+    ; 7. ADDUI
+    ; ============================================================
+    ADDUI   R22, R0, 7
+    ADDUI   R20, R10, 7
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 8. SUB
@@ -126,7 +145,17 @@ start
     NOP
     JAL     check_equal
 
-
+    ; ============================================================
+    ; 9. SUBI
+    ; ============================================================
+    ADDUI   R22, R0, 9
+    SUBI    R20, R11, 2       ; 7 - 2 = 5
+    NOP
+    NOP
+    ADDUI   R21, R0, 5
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 10. SUBU
@@ -140,7 +169,17 @@ start
     NOP
     JAL     check_equal
 
-
+    ; ============================================================
+    ; 11. SUBUI
+    ; ============================================================
+    ADDUI   R22, R0, 11
+    SUBUI   R20, R11, 2
+    NOP
+    NOP
+    ADDUI   R21, R0, 5
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 12. AND
@@ -155,6 +194,18 @@ start
     NOP
     JAL     check_equal
 
+    ; ============================================================
+    ; 13. ANDI
+    ; 10 & 0x000F = 10
+    ; ============================================================
+    ADDUI   R22, R0, 13
+    ANDI    R20, R16, 0x000F
+    NOP
+    NOP
+    ADDUI   R21, R0, 10
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 14. OR
@@ -169,7 +220,18 @@ start
     NOP
     JAL     check_equal
 
-
+    ; ============================================================
+    ; 15. ORI
+    ; 10 | 0x0001 = 11
+    ; ============================================================
+    ADDUI   R22, R0, 15
+    ORI     R20, R16, 0x0001
+    NOP
+    NOP
+    ADDUI   R21, R0, 11
+    NOP
+    NOP
+    JAL     check_equal
 
     ; ============================================================
     ; 16. XOR
@@ -180,6 +242,19 @@ start
     NOP
     NOP
     ADDUI   R21, R0, 6
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 17. XORI
+    ; 10 ^ 0x0003 = 9
+    ; ============================================================
+    ADDUI   R22, R0, 17
+    XORI    R20, R16, 0x0003
+    NOP
+    NOP
+    ADDUI   R21, R0, 9
     NOP
     NOP
     JAL     check_equal
@@ -562,10 +637,53 @@ after_jalr_49
     ADDUI   R1, R0, 13
     PCH     R1
 
+    ; PD: print -7
+    ADDUI   R1, R0, 7
+    SUB     R1, R0, R1
+    PD      R1
+
+    ; newline
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ; PDU: print 7
+    ADDUI   R1, R0, 7
+    PDU     R1
+
+    ; newline
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ; Terminal control opcodes: exercise only
+    TR
+    TGO
+    TSP
+
     ; ------------------------------------------------------------
     ; Optional interactive input smoke test
     ; Uncomment when you want to manually verify GD / GDU
     ; ------------------------------------------------------------
+    GDU     R1
+    PDU     R1
+
+    ; newline
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    GD      R2
+    PD      R2
+
+    ; newline
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
 
     ; ------------------------------------------------------------
     ; Final report: print pass_count, fail_count, last_fail
