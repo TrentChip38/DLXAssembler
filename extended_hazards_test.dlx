@@ -1,0 +1,876 @@
+.data
+pass_count      1   0
+fail_count      1   0
+last_fail       1   0
+
+src0            1   0
+src1            1   1
+src2            1   2
+src5            1   5
+src7            1   7
+src8            1   8
+src9            1   9
+src12           1   12
+src15           1   15
+src16           1   16
+
+mem0            1   0
+mem1            1   0
+mem2            1   0
+mem3            1   0
+mem4            1   0
+mem5            1   0
+mem6            1   0
+mem7            1   0
+mem8            1   0
+mem9            1   0
+mem10           1   0
+mem11           1   0
+mem12           1   0
+mem13           1   0
+mem14           1   0
+mem15           1   0
+
+.const
+
+.text
+start
+    ADD     R1, R0, R0
+    SW      pass_count(R0), R1
+    SW      fail_count(R0), R1
+    SW      last_fail(R0), R1
+
+    ADDUI   R4, R0, 1
+    ADDUI   R5, R0, 2
+    ADDUI   R6, R0, 3
+    ADDUI   R7, R0, 4
+    ADDUI   R8, R0, 5
+    ADDUI   R9, R0, 7
+    ADDUI   R10, R0, 8
+    ADDUI   R11, R0, 9
+    ADDUI   R12, R0, 12
+    ADDUI   R13, R0, 15
+    ADDUI   R14, R0, 16
+
+    ; 1 ADDUI -> ADDUI source1
+    ADDUI   R22, R0, 1
+    ADDUI   R15, R0, 5
+    ADDUI   R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    JAL     check_equal_r2_r3
+
+    ; 2 ADDUI -> ADDU source1
+    ADDUI   R22, R0, 2
+    ADDUI   R15, R0, 5
+    ADDU    R2, R15, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 3 ADDUI -> ADDU source2
+    ADDUI   R22, R0, 3
+    ADDUI   R15, R0, 5
+    ADDU    R2, R4, R15
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 4 ADDUI -> ADDU both operands same
+    ADDUI   R22, R0, 4
+    ADDUI   R15, R0, 5
+    ADDU    R2, R15, R15
+    NOP
+    NOP
+    ADDUI   R3, R0, 10
+    JAL     check_equal_r2_r3
+
+    ; 5 two previous same rd, newest wins source1
+    ADDUI   R22, R0, 5
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 5
+    ADDUI   R2, R15, 2
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 6 two previous same rd, newest wins source2
+    ADDUI   R22, R0, 6
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 5
+    ADDU    R2, R4, R15
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 7 simultaneous two-source forward from two producers
+    ADDUI   R22, R0, 7
+    ADDUI   R15, R0, 5
+    ADDUI   R16, R0, 7
+    ADDU    R2, R15, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    JAL     check_equal_r2_r3
+
+    ; 8 three-deep chain
+    ADDUI   R22, R0, 8
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R15, 2
+    ADDUI   R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 9 ADDUI -> SNEI
+    ADDUI   R22, R0, 9
+    ADDUI   R15, R0, 5
+    SNEI    R2, R15, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 10 ADDUI -> SNE
+    ADDUI   R22, R0, 10
+    ADDUI   R15, R0, 5
+    SNE     R2, R15, R9
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 11 SNE -> ADDUI
+    ADDUI   R22, R0, 11
+    SNE     R15, R8, R9
+    ADDUI   R2, R15, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 12 SNEI -> ADDU
+    ADDUI   R22, R0, 12
+    SNEI    R15, R8, 5
+    ADDU    R2, R15, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 13 ORI -> XORI chain
+    ADDUI   R22, R0, 13
+    ORI     R15, R0, 10
+    XORI    R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 14 XORI -> ANDI chain
+    ADDUI   R22, R0, 14
+    XORI    R15, R0, 15
+    ANDI    R2, R15, 7
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 15 SLLI -> SRLI chain
+    ADDUI   R22, R0, 15
+    SLLI    R15, R4, 4
+    SRLI    R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 16 LW -> ADDUI
+    ADDUI   R22, R0, 16
+    LW      R15, src5(R0)
+    ADDUI   R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    JAL     check_equal_r2_r3
+
+    ; 17 LW -> ADDU source1
+    ADDUI   R22, R0, 17
+    LW      R15, src5(R0)
+    ADDU    R2, R15, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 18 LW -> ADDU source2
+    ADDUI   R22, R0, 18
+    LW      R15, src5(R0)
+    ADDU    R2, R4, R15
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    ; 19 LW -> SNEI
+    ADDUI   R22, R0, 19
+    LW      R15, src5(R0)
+    SNEI    R2, R15, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 20 older ALU newer LW same rd newest wins
+    ADDUI   R22, R0, 20
+    ADDUI   R15, R0, 1
+    LW      R15, src9(R0)
+    ADDUI   R2, R15, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 21 older LW newer ALU same rd newest wins
+    ADDUI   R22, R0, 21
+    LW      R15, src9(R0)
+    ADDUI   R15, R0, 5
+    ADDUI   R2, R15, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 22 LW -> ORI
+    ADDUI   R22, R0, 22
+    LW      R15, src8(R0)
+    ORI     R2, R15, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 23 LW -> SRLI
+    ADDUI   R22, R0, 23
+    LW      R15, src16(R0)
+    SRLI    R2, R15, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 24 ADDUI -> SW data
+    ADDUI   R22, R0, 24
+    ADDUI   R15, R0, 7
+    SW      mem0(R0), R15
+    NOP
+    NOP
+    LW      R2, mem0(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 25 ADDUI -> SW base
+    ADDUI   R22, R0, 25
+    ADDUI   R15, R0, 1
+    SW      mem0(R15), R9
+    NOP
+    NOP
+    LW      R2, mem1(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 26 LW -> SW data
+    ADDUI   R22, R0, 26
+    LW      R15, src9(R0)
+    SW      mem2(R0), R15
+    NOP
+    NOP
+    LW      R2, mem2(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 27 LW -> SW base
+    ADDUI   R22, R0, 27
+    LW      R15, src5(R0)
+    SW      mem0(R15), R8
+    NOP
+    NOP
+    LW      R2, mem5(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 28 two previous same rd newest wins SW data
+    ADDUI   R22, R0, 28
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 9
+    SW      mem3(R0), R15
+    NOP
+    NOP
+    LW      R2, mem3(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 29 two previous same rd newest wins SW base
+    ADDUI   R22, R0, 29
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 2
+    SW      mem0(R15), R8
+    NOP
+    NOP
+    LW      R2, mem2(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 30 simultaneous base/data forwards into SW
+    ADDUI   R22, R0, 30
+    ADDUI   R15, R0, 4
+    ADDUI   R16, R0, 9
+    SW      mem0(R15), R16
+    NOP
+    NOP
+    LW      R2, mem4(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 31 ALU chain -> SW data
+    ADDUI   R22, R0, 31
+    ADDUI   R15, R0, 2
+    ADDUI   R15, R15, 5
+    SW      mem6(R0), R15
+    NOP
+    NOP
+    LW      R2, mem6(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 32 ALU chain -> SW base
+    ADDUI   R22, R0, 32
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R15, 6
+    SW      mem0(R15), R8
+    NOP
+    NOP
+    LW      R2, mem7(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 33 ADDUI -> BEQZ taken
+    ADDUI   R22, R0, 33
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 0
+    BEQZ    R15, t33_taken
+    ADDUI   R2, R0, 99
+t33_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 34 ADDUI -> BEQZ not taken
+    ADDUI   R22, R0, 34
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 1
+    BEQZ    R15, t34_skip
+    ADDUI   R2, R0, 2
+t34_skip
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 35 ADDUI -> BNEZ taken
+    ADDUI   R22, R0, 35
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 1
+    BNEZ    R15, t35_taken
+    ADDUI   R2, R0, 99
+t35_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 36 SNEI -> BNEZ not taken
+    ADDUI   R22, R0, 36
+    ADDUI   R2, R0, 1
+    SNEI    R15, R8, 5
+    BNEZ    R15, t36_skip
+    ADDUI   R2, R0, 2
+t36_skip
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 37 LW -> BEQZ taken
+    ADDUI   R22, R0, 37
+    ADDUI   R2, R0, 1
+    LW      R15, src0(R0)
+    BEQZ    R15, t37_taken
+    ADDUI   R2, R0, 99
+t37_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 38 LW -> BNEZ taken
+    ADDUI   R22, R0, 38
+    ADDUI   R2, R0, 1
+    LW      R15, src5(R0)
+    BNEZ    R15, t38_taken
+    ADDUI   R2, R0, 99
+t38_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 39 two previous same rd newest wins branch sees newest nonzero
+    ADDUI   R22, R0, 39
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 0
+    ADDUI   R15, R0, 1
+    BEQZ    R15, t39_skip
+    ADDUI   R2, R0, 2
+t39_skip
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 40 two previous same rd newest wins branch sees newest zero
+    ADDUI   R22, R0, 40
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 0
+    BEQZ    R15, t40_taken
+    ADDUI   R2, R0, 99
+t40_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 41 simultaneous two older producers into SNE
+    ADDUI   R22, R0, 41
+    ADDUI   R15, R0, 5
+    ADDUI   R16, R0, 7
+    SNE     R2, R15, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 42 simultaneous mixed producers into ADDU
+    ADDUI   R22, R0, 42
+    LW      R15, src5(R0)
+    ADDUI   R16, R0, 7
+    ADDU    R2, R15, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    JAL     check_equal_r2_r3
+
+    ; 43 simultaneous mixed producers into SNE
+    ADDUI   R22, R0, 43
+    ADDUI   R15, R0, 5
+    LW      R16, src5(R0)
+    SNE     R2, R15, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 0
+    JAL     check_equal_r2_r3
+
+    ; 44 J flushes next
+    ADDUI   R22, R0, 44
+    ADDUI   R2, R0, 1
+    J       t44_target
+    ADDUI   R2, R0, 99
+t44_target
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 45 J flushes wrong-path store
+    ADDUI   R22, R0, 45
+    SW      mem15(R0), R0
+    J       t45_target
+    SW      mem15(R0), R4
+t45_target
+    NOP
+    NOP
+    LW      R2, mem15(R0)
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    JAL     check_equal_r2_r3
+
+    ; 46 JAL -> JR R31
+    ADDUI   R22, R0, 46
+    ADDUI   R2, R0, 1
+    JAL     t46_sub
+t46_ret
+    ADDUI   R2, R0, 2
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+    J       t46_after
+t46_sub
+    JR      R31
+t46_after
+
+    ; 47 JAL -> JALR R31
+    ADDUI   R22, R0, 47
+    ADDUI   R2, R0, 1
+    JAL     t47_sub
+t47_ret
+    ADDUI   R2, R0, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 3
+    JAL     check_equal_r2_r3
+    J       t47_after
+t47_sub
+    JALR    R31
+t47_after
+
+    ; 48 ADDU -> JR target
+    ADDUI   R22, R0, 48
+    ADDUI   R2, R0, 1
+    JAL     t48_sub
+t48_ret
+    ADDUI   R2, R0, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 4
+    JAL     check_equal_r2_r3
+    J       t48_after
+t48_sub
+    ADDU    R6, R31, R0
+    JR      R6
+t48_after
+
+    ; 49 ADDU -> JALR target
+    ADDUI   R22, R0, 49
+    ADDUI   R2, R0, 1
+    JAL     t49_sub
+t49_ret
+    ADDUI   R2, R0, 5
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+    J       t49_after
+t49_sub
+    ADDU    R6, R31, R0
+    JALR    R6
+t49_after
+
+    ; 50 two previous same target register then JR should use newest
+    ADDUI   R22, R0, 50
+    ADDUI   R2, R0, 1
+    JAL     t50_sub
+t50_ret
+    ADDUI   R2, R0, 6
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+    J       t50_after
+t50_sub
+    ADDUI   R6, R0, 0
+    ADDU    R6, R31, R0
+    JR      R6
+t50_after
+
+    ; 51 two previous same target register then JALR should use newest
+    ADDUI   R22, R0, 51
+    ADDUI   R2, R0, 1
+    JAL     t51_sub
+t51_ret
+    ADDUI   R2, R0, 7
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+    J       t51_after
+t51_sub
+    ADDUI   R6, R0, 0
+    ADDU    R6, R31, R0
+    JALR    R6
+t51_after
+
+    ; 52 ORI -> PDU sink manual visibility only
+    ORI     R1, R0, 13
+    PDU     R1
+    JAL     print_nl
+
+    ; 53 LW -> PDU sink manual visibility only
+    LW      R1, src9(R0)
+    PDU     R1
+    JAL     print_nl
+
+    ; 54 ADDUI -> LW base
+    ADDUI   R22, R0, 52
+    ADDUI   R15, R0, 5
+    LW      R2, src0(R15)
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    JAL     check_equal_r2_r3
+
+    ; 55 LW -> LW base
+    ADDUI   R22, R0, 53
+    LW      R15, src5(R0)
+    LW      R2, src0(R15)
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    JAL     check_equal_r2_r3
+
+    ; 56 two previous same rd newest wins LW base
+    ADDUI   R22, R0, 54
+    ADDUI   R15, R0, 1
+    ADDUI   R15, R0, 7
+    LW      R2, src0(R15)
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    JAL     check_equal_r2_r3
+
+    ; 57 ADDUI -> BEQZ with one gap
+    ADDUI   R22, R0, 55
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 0
+    ADDUI   R16, R0, 9
+    BEQZ    R15, t57_taken
+    ADDUI   R2, R0, 99
+t57_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 58 LW -> BNEZ with one gap
+    ADDUI   R22, R0, 56
+    ADDUI   R2, R0, 1
+    LW      R15, src5(R0)
+    ADDUI   R16, R0, 9
+    BNEZ    R15, t58_taken
+    ADDUI   R2, R0, 99
+t58_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 59 two-source branch producer setup with one ALU and one independent op
+    ADDUI   R22, R0, 57
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 0
+    ADDUI   R16, R0, 3
+    BEQZ    R15, t59_taken
+    ADDUI   R2, R0, 99
+t59_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 60 ALU -> SW base, later LW verify
+    ADDUI   R22, R0, 58
+    ADDUI   R15, R0, 2
+    SW      mem0(R15), R11
+    NOP
+    NOP
+    LW      R2, mem2(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    JAL     check_equal_r2_r3
+
+    ; 61 LW -> SW data, later verify
+    ADDUI   R22, R0, 59
+    LW      R15, src12(R0)
+    SW      mem9(R0), R15
+    NOP
+    NOP
+    LW      R2, mem9(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    JAL     check_equal_r2_r3
+
+    ; 62 LW -> SW base, later verify
+    ADDUI   R22, R0, 60
+    LW      R15, src2(R0)
+    SW      mem0(R15), R12
+    NOP
+    NOP
+    LW      R2, mem2(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    JAL     check_equal_r2_r3
+
+    ; 63 ADDUI -> ORI chain
+    ADDUI   R22, R0, 61
+    ADDUI   R15, R0, 5
+    ORI     R15, R15, 2
+    ADDUI   R2, R15, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    JAL     check_equal_r2_r3
+
+    ; 64 LW -> XORI chain
+    ADDUI   R22, R0, 62
+    LW      R15, src15(R0)
+    XORI    R15, R15, 7
+    ADDUI   R2, R15, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    JAL     check_equal_r2_r3
+
+    ; 65 shift chain
+    ADDUI   R22, R0, 63
+    ADDUI   R15, R0, 1
+    SLLI    R15, R15, 3
+    SRLI    R2, R15, 2
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 66 LW -> shift -> ADDUI
+    ADDUI   R22, R0, 64
+    LW      R15, src16(R0)
+    SRLI    R15, R15, 2
+    ADDUI   R2, R15, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+
+    ; 67 back-to-back branches with produced operands
+    ADDUI   R22, R0, 65
+    ADDUI   R2, R0, 1
+    ADDUI   R15, R0, 0
+    BEQZ    R15, t67_a
+    ADDUI   R2, R0, 99
+t67_a
+    ADDUI   R15, R0, 1
+    BNEZ    R15, t67_b
+    ADDUI   R2, R0, 98
+t67_b
+    ADDUI   R2, R0, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 68 LW + ALU -> ADDU mixed chain
+    ADDUI   R22, R0, 66
+    LW      R15, src7(R0)
+    ADDUI   R16, R0, 4
+    ADDU    R15, R15, R16
+    ADDUI   R2, R15, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 11
+    JAL     check_equal_r2_r3
+
+    ; manual sink checks
+    ADDUI   R1, R0, 13
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, src9(R0)
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, pass_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, fail_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, last_fail(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+    GDU     R1
+    ADDUI   R1, R1, 1
+    PDU     R1
+    JAL     print_nl
+
+done
+    J       done
+
+print_nl
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+    JR      R31
+
+check_equal_r2_r3
+    SUB     R23, R2, R3
+    BNEZ    R23, check_fail
+
+check_pass
+    LW      R24, pass_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      pass_count(R0), R24
+    JR      R31
+
+check_fail
+    LW      R24, fail_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      fail_count(R0), R24
+    SW      last_fail(R0), R22
+    JR      R31

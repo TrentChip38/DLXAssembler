@@ -1,0 +1,350 @@
+.data
+pass_count      1   0
+fail_count      1   0
+last_fail       1   0
+
+flag0           1   0
+flag1           1   0
+flag2           1   0
+flag3           1   0
+flag4           1   0
+flag5           1   0
+flag6           1   0
+flag7           1   0
+
+.const
+
+.text
+start
+    ADD     R1, R0, R0
+    SW      pass_count(R0), R1
+    SW      fail_count(R0), R1
+    SW      last_fail(R0), R1
+
+    ADDUI   R4, R0, 1
+    ADDUI   R5, R0, 2
+    ADDUI   R6, R0, 3
+    ADDUI   R7, R0, 4
+    ADDUI   R8, R0, 5
+
+    ; 1 BEQZ taken flushes next instruction
+    ADDUI   R22, R0, 1
+    ADDUI   R2, R0, 1
+    BEQZ    R0, t1_taken
+    ADDUI   R2, R0, 99
+t1_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 2 BEQZ not taken falls through
+    ADDUI   R22, R0, 2
+    ADDUI   R2, R0, 1
+    BEQZ    R4, t2_skip
+    ADDUI   R2, R0, 2
+t2_skip
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 3 BNEZ taken flushes next instruction
+    ADDUI   R22, R0, 3
+    ADDUI   R2, R0, 1
+    BNEZ    R4, t3_taken
+    ADDUI   R2, R0, 99
+t3_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 4 BNEZ not taken falls through
+    ADDUI   R22, R0, 4
+    ADDUI   R2, R0, 1
+    BNEZ    R0, t4_skip
+    ADDUI   R2, R0, 2
+t4_skip
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+
+    ; 5 BEQZ taken suppresses wrong-path store
+    ADDUI   R22, R0, 5
+    SW      flag0(R0), R0
+    BEQZ    R0, t5_taken
+    SW      flag0(R0), R4
+t5_taken
+    NOP
+    NOP
+    LW      R2, flag0(R0)
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    JAL     check_equal_r2_r3
+
+    ; 6 BNEZ taken suppresses wrong-path store
+    ADDUI   R22, R0, 6
+    SW      flag1(R0), R0
+    BNEZ    R4, t6_taken
+    SW      flag1(R0), R4
+t6_taken
+    NOP
+    NOP
+    LW      R2, flag1(R0)
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    JAL     check_equal_r2_r3
+
+    ; 7 J redirects and flushes next instruction
+    ADDUI   R22, R0, 7
+    ADDUI   R2, R0, 1
+    J       t7_target
+    ADDUI   R2, R0, 99
+t7_target
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 8 J suppresses wrong-path store
+    ADDUI   R22, R0, 8
+    SW      flag2(R0), R0
+    J       t8_target
+    SW      flag2(R0), R4
+t8_target
+    NOP
+    NOP
+    LW      R2, flag2(R0)
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    JAL     check_equal_r2_r3
+
+    ; 9 J target contains taken branch
+    ADDUI   R22, R0, 9
+    ADDUI   R2, R0, 1
+    J       t9_a
+    ADDUI   R2, R0, 99
+t9_a
+    BNEZ    R4, t9_b
+    ADDUI   R2, R0, 98
+t9_b
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 10 taken branch around J instruction
+    ADDUI   R22, R0, 10
+    ADDUI   R2, R0, 1
+    BEQZ    R0, t10_taken
+    J       t10_bad
+t10_taken
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+    J       t10_after
+t10_bad
+    ADDUI   R2, R0, 99
+t10_after
+
+    ; 11 J skips over another J
+    ADDUI   R22, R0, 11
+    ADDUI   R2, R0, 1
+    J       t11_good
+    J       t11_bad
+t11_bad
+    ADDUI   R2, R0, 99
+t11_good
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 12 JAL basic call/return
+    ADDUI   R22, R0, 12
+    ADDUI   R2, R0, 1
+    JAL     t12_sub
+t12_ret
+    ADDUI   R2, R0, 2
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    JAL     check_equal_r2_r3
+    J       t12_after
+t12_sub
+    JR      R31
+t12_after
+
+    ; 13 JR redirect using copied R31
+    ADDUI   R22, R0, 13
+    ADDUI   R2, R0, 1
+    JAL     t13_sub
+t13_ret
+    ADDUI   R2, R0, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 3
+    JAL     check_equal_r2_r3
+    J       t13_after
+t13_sub
+    ADD     R6, R31, R0
+    JR      R6
+t13_after
+
+    ; 14 JALR basic call/return using R31
+    ADDUI   R22, R0, 14
+    ADDUI   R2, R0, 1
+    JAL     t14_sub
+t14_ret
+    ADDUI   R2, R0, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 4
+    JAL     check_equal_r2_r3
+    J       t14_after
+t14_sub
+    JALR    R31
+t14_after
+
+    ; 15 JALR using copied R31 target
+    ADDUI   R22, R0, 15
+    ADDUI   R2, R0, 1
+    JAL     t15_sub
+t15_ret
+    ADDUI   R2, R0, 5
+    NOP
+    NOP
+    ADDUI   R3, R0, 5
+    JAL     check_equal_r2_r3
+    J       t15_after
+t15_sub
+    ADD     R6, R31, R0
+    JALR    R6
+t15_after
+
+    ; 16 branch to J target
+    ADDUI   R22, R0, 16
+    ADDUI   R2, R0, 1
+    BEQZ    R0, t16_a
+    ADDUI   R2, R0, 99
+t16_a
+    J       t16_b
+    ADDUI   R2, R0, 98
+t16_b
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 17 branch not taken then J taken
+    ADDUI   R22, R0, 17
+    ADDUI   R2, R0, 1
+    BEQZ    R4, t17_skip
+    J       t17_target
+    ADDUI   R2, R0, 99
+t17_skip
+    ADDUI   R2, R0, 98
+t17_target
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 18 not-taken branch does not flush following store
+    ADDUI   R22, R0, 18
+    SW      flag3(R0), R0
+    BEQZ    R4, t18_skip
+    SW      flag3(R0), R4
+t18_skip
+    NOP
+    NOP
+    LW      R2, flag3(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 19 taken branch suppresses two wrong-path effects
+    ADDUI   R22, R0, 19
+    SW      flag4(R0), R0
+    ADDUI   R2, R0, 1
+    BNEZ    R4, t19_taken
+    SW      flag4(R0), R4
+    ADDUI   R2, R0, 99
+t19_taken
+    NOP
+    NOP
+    LW      R3, flag4(R0)
+    ADD     R2, R2, R3
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    JAL     check_equal_r2_r3
+
+    ; 20 GDU followed immediately by dependent ADDUI should stall if needed
+    ADDUI   R22, R0, 20
+    GDU     R2
+    ADDUI   R2, R2, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    JAL     check_equal_r2_r3
+
+    LW      R1, pass_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, fail_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+    LW      R1, last_fail(R0)
+    NOP
+    NOP
+    PDU     R1
+    JAL     print_nl
+
+done
+    J       done
+
+print_nl
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+    JR      R31
+
+check_equal_r2_r3
+    SUB     R23, R2, R3
+    BNEZ    R23, check_fail
+
+check_pass
+    LW      R24, pass_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      pass_count(R0), R24
+    JR      R31
+
+check_fail
+    LW      R24, fail_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      fail_count(R0), R24
+    SW      last_fail(R0), R22
+    JR      R31

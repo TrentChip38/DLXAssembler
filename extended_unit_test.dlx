@@ -1,0 +1,1100 @@
+.data
+pass_count      1   0
+fail_count      1   0
+last_fail       1   0
+
+mem0            1   0
+mem1            1   0
+mem2            1   0
+mem3            1   0
+mem4            1   0
+mem5            1   0
+mem6            1   0
+mem7            1   0
+
+.const
+
+.text
+start
+    ADD     R1, R0, R0
+    SW      pass_count(R0), R1
+    SW      fail_count(R0), R1
+    SW      last_fail(R0), R1
+
+    ADDUI   R4, R0, 1
+    ADDUI   R5, R0, 2
+    ADDUI   R6, R0, 3
+    ADDUI   R7, R0, 4
+    ADDUI   R8, R0, 5
+    ADDUI   R9, R0, 7
+    ADDUI   R10, R0, 8
+    ADDUI   R11, R0, 10
+    ADDUI   R12, R0, 12
+    ADDUI   R13, R0, 15
+    ADDUI   R14, R0, 16
+    ADDUI   R15, R0, 31
+
+    SUB     R16, R0, R4       ; -1
+    SUB     R17, R0, R5       ; -2
+    SUB     R18, R0, R7       ; -4
+    SUB     R19, R0, R14      ; -16
+
+    ADDUI   R20, R0, 1
+    SLLI    R20, R20, 31      ; min int
+    SUBUI   R21, R20, 1       ; max int
+
+    ; 1
+    ADDUI   R22, R0, 1
+    ADD     R2, R8, R0
+    NOP
+    NOP
+    ADD     R3, R8, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 2
+    ADDUI   R22, R0, 2
+    ADD     R2, R0, R0
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 3
+    ADDUI   R22, R0, 3
+    ADD     R2, R8, R9
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 4
+    ADDUI   R22, R0, 4
+    ADD     R2, R17, R8
+    NOP
+    NOP
+    ADDUI   R3, R0, 3
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 5
+    ADDUI   R22, R0, 5
+    ADDI    R2, R9, 5
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 6
+    ADDUI   R22, R0, 6
+    ADDU    R2, R11, R14
+    NOP
+    NOP
+    ADDUI   R3, R0, 26
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 7
+    ADDUI   R22, R0, 7
+    ADDUI   R2, R11, 16
+    NOP
+    NOP
+    ADDUI   R3, R0, 26
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 8
+    ADDUI   R22, R0, 8
+    SUB     R2, R12, R8
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 9
+    ADDUI   R22, R0, 9
+    SUB     R2, R8, R12
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    SUB     R3, R0, R3
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 10
+    ADDUI   R22, R0, 10
+    SUBI    R2, R12, 5
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 11
+    ADDUI   R22, R0, 11
+    SUBU    R2, R14, R7
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 12
+    ADDUI   R22, R0, 12
+    SUBUI   R2, R14, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 13
+    ADDUI   R22, R0, 13
+    AND     R2, R11, R12
+    NOP
+    NOP
+    ADDUI   R3, R0, 8
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 14
+    ADDUI   R22, R0, 14
+    ANDI    R2, R13, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 3
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 15
+    ADDUI   R22, R0, 15
+    OR      R2, R11, R12
+    NOP
+    NOP
+    ADDUI   R3, R0, 14
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 16
+    ADDUI   R22, R0, 16
+    ORI     R2, R11, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 11
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 17
+    ADDUI   R22, R0, 17
+    XOR     R2, R11, R12
+    NOP
+    NOP
+    ADDUI   R3, R0, 6
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 18
+    ADDUI   R22, R0, 18
+    XORI    R2, R11, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 9
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 19
+    ADDUI   R22, R0, 19
+    SLL     R2, R6, R5
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 20
+    ADDUI   R22, R0, 20
+    SLLI    R2, R6, 4
+    NOP
+    NOP
+    ADDUI   R3, R0, 48
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 21
+    ADDUI   R22, R0, 21
+    SRL     R2, R14, R7
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 22
+    ADDUI   R22, R0, 22
+    SRLI    R2, R14, 3
+    NOP
+    NOP
+    ADDUI   R3, R0, 2
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 23
+    ADDUI   R22, R0, 23
+    SRA     R2, R19, R5
+    NOP
+    NOP
+    ADDUI   R3, R0, 4
+    SUB     R3, R0, R3
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 24
+    ADDUI   R22, R0, 24
+    SRAI    R2, R19, 2
+    NOP
+    NOP
+    ADDUI   R3, R0, 4
+    SUB     R3, R0, R3
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 25
+    ADDUI   R22, R0, 25
+    SRAI    R2, R20, 31
+    NOP
+    NOP
+    SUB     R3, R0, R4
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 26
+    ADDUI   R22, R0, 26
+    SRLI    R2, R20, 31
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 27
+    ADDUI   R22, R0, 27
+    SLT     R2, R16, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 28
+    ADDUI   R22, R0, 28
+    SLT     R2, R4, R16
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 29
+    ADDUI   R22, R0, 29
+    SLTI    R2, R16, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 30
+    ADDUI   R22, R0, 30
+    SLTU    R2, R16, R4
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 31
+    ADDUI   R22, R0, 31
+    SLTUI   R2, R16, 1
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 32
+    ADDUI   R22, R0, 32
+    SGT     R2, R4, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 33
+    ADDUI   R22, R0, 33
+    SGT     R2, R16, R4
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 34
+    ADDUI   R22, R0, 34
+    SGTI    R2, R4, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 35
+    ADDUI   R22, R0, 35
+    SGTU    R2, R16, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 36
+    ADDUI   R22, R0, 36
+    SGTUI   R2, R16, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 37
+    ADDUI   R22, R0, 37
+    SLE     R2, R8, R8
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 38
+    ADDUI   R22, R0, 38
+    SLE     R2, R16, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 39
+    ADDUI   R22, R0, 39
+    SLEI    R2, R4, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 40
+    ADDUI   R22, R0, 40
+    SLEU    R2, R16, R4
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 41
+    ADDUI   R22, R0, 41
+    SLEUI   R2, R16, 1
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 42
+    ADDUI   R22, R0, 42
+    SGE     R2, R8, R8
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 43
+    ADDUI   R22, R0, 43
+    SGE     R2, R4, R16
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 44
+    ADDUI   R22, R0, 44
+    SGEI    R2, R4, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 45
+    ADDUI   R22, R0, 45
+    SGEU    R2, R16, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 46
+    ADDUI   R22, R0, 46
+    SGEUI   R2, R16, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 47
+    ADDUI   R22, R0, 47
+    SEQ     R2, R8, R8
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 48
+    ADDUI   R22, R0, 48
+    SEQ     R2, R8, R9
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 49
+    ADDUI   R22, R0, 49
+    SEQI    R2, R9, 7
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 50
+    ADDUI   R22, R0, 50
+    SNE     R2, R8, R9
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 51
+    ADDUI   R22, R0, 51
+    SNE     R2, R8, R8
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 52
+    ADDUI   R22, R0, 52
+    SNEI    R2, R9, 5
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 53 LW mem0
+    ADDUI   R22, R0, 53
+    SW      mem0(R0), R12
+    NOP
+    NOP
+    LW      R2, mem0(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 12
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 54 SW overwrite mem0
+    ADDUI   R22, R0, 54
+    SW      mem0(R0), R9
+    NOP
+    NOP
+    LW      R2, mem0(R0)
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 55 SW negative
+    ADDUI   R22, R0, 55
+    SW      mem1(R0), R16
+    NOP
+    NOP
+    LW      R2, mem1(R0)
+    NOP
+    NOP
+    ADD     R3, R16, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 56 LW with offset 1
+    ADDUI   R22, R0, 56
+    SW      mem0(R0), R8
+    SW      mem0(R4), R9
+    NOP
+    NOP
+    LW      R2, mem0(R4)
+    NOP
+    NOP
+    ADDUI   R3, R0, 7
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 57 LW with offset 2
+    ADDUI   R22, R0, 57
+    SW      mem0(R5), R11
+    NOP
+    NOP
+    LW      R2, mem0(R5)
+    NOP
+    NOP
+    ADDUI   R3, R0, 10
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 58 BEQZ taken
+    ADDUI   R22, R0, 58
+    ADDUI   R2, R0, 1
+    BEQZ    R0, beqz_taken_58
+    ADDUI   R2, R0, 99
+beqz_taken_58
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 59 BEQZ not taken
+    ADDUI   R22, R0, 59
+    ADDUI   R2, R0, 1
+    BEQZ    R4, beqz_not_taken_59
+    ADDUI   R2, R0, 2
+beqz_not_taken_59
+    ADDUI   R3, R0, 2
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 60 BNEZ taken
+    ADDUI   R22, R0, 60
+    ADDUI   R2, R0, 1
+    BNEZ    R4, bnez_taken_60
+    ADDUI   R2, R0, 99
+bnez_taken_60
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 61 BNEZ not taken
+    ADDUI   R22, R0, 61
+    ADDUI   R2, R0, 1
+    BNEZ    R0, bnez_not_taken_61
+    ADDUI   R2, R0, 2
+bnez_not_taken_61
+    ADDUI   R3, R0, 2
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 62 J
+    ADDUI   R22, R0, 62
+    ADDUI   R2, R0, 1
+    J       jump_target_62
+    ADDUI   R2, R0, 99
+jump_target_62
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 63 JR via normal return
+    ADDUI   R22, R0, 63
+    ADDUI   R2, R0, 0
+    JAL     jr_sub
+jr_ret_63
+    ADDUI   R3, R0, 55
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 64 JAL
+    ADDUI   R22, R0, 64
+    ADDUI   R2, R0, 0
+    JAL     jal_sub
+jal_ret_64
+    ADDUI   R3, R0, 66
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 65 JALR
+    ADDUI   R22, R0, 65
+    ADDUI   R2, R0, 1
+    JAL     jalr_entry_65
+jalr_ret_65
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+    J       after_jalr_65
+jalr_entry_65
+    JALR    R31
+    ADDUI   R2, R0, 99
+after_jalr_65
+
+    ; 66 SEQ minint == minint
+    ADDUI   R22, R0, 66
+    SEQ     R2, R20, R20
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 67 SNE minint != maxint
+    ADDUI   R22, R0, 67
+    SNE     R2, R20, R21
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 68 SLT minint < maxint
+    ADDUI   R22, R0, 68
+    SLT     R2, R20, R21
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 69 SGT maxint > minint
+    ADDUI   R22, R0, 69
+    SGT     R2, R21, R20
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 70 SLTU minint < 1 unsigned => 0
+    ADDUI   R22, R0, 70
+    SLTU    R2, R20, R4
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 71 SGTU minint > 1 unsigned => 1
+    ADDUI   R22, R0, 71
+    SGTU    R2, R20, R4
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 72 SLE minint <= minint
+    ADDUI   R22, R0, 72
+    SLE     R2, R20, R20
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 73 SGE maxint >= maxint
+    ADDUI   R22, R0, 73
+    SGE     R2, R21, R21
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 74 SLTI 0 < 1
+    ADDUI   R22, R0, 74
+    SLTI    R2, R0, 1
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 75 SGTI 0 > 1 => 0
+    ADDUI   R22, R0, 75
+    SGTI    R2, R0, 1
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 76 SLEI 0 <= 0
+    ADDUI   R22, R0, 76
+    SLEI    R2, R0, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 77 SGEI 0 >= 0
+    ADDUI   R22, R0, 77
+    SGEI    R2, R0, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 78 SEQI 0 == 0
+    ADDUI   R22, R0, 78
+    SEQI    R2, R0, 0
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 79 SNEI 0 != 0 => 0
+    ADDUI   R22, R0, 79
+    SNEI    R2, R0, 0
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 80 SRLI maxint >> 30 = 1
+    ADDUI   R22, R0, 80
+    SRLI    R2, R21, 30
+    NOP
+    NOP
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 81 SLLI 1 << 31 = minint
+    ADDUI   R22, R0, 81
+    SLLI    R2, R4, 31
+    NOP
+    NOP
+    ADD     R3, R20, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 82 XOR self = 0
+    ADDUI   R22, R0, 82
+    XOR     R2, R12, R12
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 83 OR self = self
+    ADDUI   R22, R0, 83
+    OR      R2, R13, R13
+    NOP
+    NOP
+    ADD     R3, R13, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 84 AND zero = 0
+    ADDUI   R22, R0, 84
+    AND     R2, R13, R0
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 85 ADD maxint + 0 = maxint
+    ADDUI   R22, R0, 85
+    ADD     R2, R21, R0
+    NOP
+    NOP
+    ADD     R3, R21, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 86 SUB minint - 0 = minint
+    ADDUI   R22, R0, 86
+    SUB     R2, R20, R0
+    NOP
+    NOP
+    ADD     R3, R20, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 87 BEQZ with negative nonzero not taken
+    ADDUI   R22, R0, 87
+    ADDUI   R2, R0, 1
+    BEQZ    R16, beqz_neg_87
+    ADDUI   R2, R0, 2
+beqz_neg_87
+    ADDUI   R3, R0, 2
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 88 BNEZ with negative taken
+    ADDUI   R22, R0, 88
+    ADDUI   R2, R0, 1
+    BNEZ    R16, bnez_neg_88
+    ADDUI   R2, R0, 99
+bnez_neg_88
+    ADDUI   R3, R0, 1
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 89 unsigned zero store/load
+    ADDUI   R22, R0, 89
+    SW      mem2(R0), R0
+    NOP
+    NOP
+    LW      R2, mem2(R0)
+    NOP
+    NOP
+    ADD     R3, R0, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 90 store/load minint
+    ADDUI   R22, R0, 90
+    SW      mem3(R0), R20
+    NOP
+    NOP
+    LW      R2, mem3(R0)
+    NOP
+    NOP
+    ADD     R3, R20, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 91 store/load maxint
+    ADDUI   R22, R0, 91
+    SW      mem4(R0), R21
+    NOP
+    NOP
+    LW      R2, mem4(R0)
+    NOP
+    NOP
+    ADD     R3, R21, R0
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; 92 J skips one instruction
+    ADDUI   R22, R0, 92
+    ADDUI   R2, R0, 5
+    J       jump_target_92
+    ADDUI   R2, R0, 6
+jump_target_92
+    ADDUI   R3, R0, 5
+    NOP
+    NOP
+    JAL     check_equal_r2_r3
+
+    ; manual print sanity
+    ADDUI   R1, R0, 65
+    PCH     R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ADDUI   R1, R0, 7
+    SUB     R1, R0, R1
+    PD      R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ADDUI   R1, R0, 7
+    PDU     R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ADDUI   R1, R0, 2
+    PDU     R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    PD      R20
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    LW      R1, pass_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    LW      R1, fail_count(R0)
+    NOP
+    NOP
+    PDU     R1
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    LW      R1, last_fail(R0)
+    NOP
+    NOP
+    PDU     R1
+
+done
+    J       done
+
+check_equal_r2_r3
+    SUB     R23, R2, R3
+    BNEZ    R23, check_fail
+
+check_pass
+    LW      R24, pass_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      pass_count(R0), R24
+    JR      R31
+
+check_fail
+    LW      R24, fail_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      fail_count(R0), R24
+    SW      last_fail(R0), R22
+    JR      R31
+
+jr_sub
+    ADDUI   R2, R0, 55
+    JR      R31
+
+jal_sub
+    ADDUI   R2, R0, 66
+    JR      R31

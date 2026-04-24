@@ -1,0 +1,61 @@
+.data
+big     1   123456789
+
+.const
+
+.text
+    ADDUI   R20, R0, 10      ; LF
+    ADDUI   R21, R0, 13      ; CR
+
+    ; -------------------------
+    ; Header F1
+    ; -------------------------
+    ADDUI   R1, R0, 70       ; 'F'
+    PCH     R1
+    ADDUI   R1, R0, 49       ; '1'
+    PCH     R1
+    PCH     R20
+    PCH     R21
+
+    ADDUI   R10, R0, 24
+f1_loop
+    LW      R1, big(R0)
+    PDU     R1
+    PCH     R20
+    PCH     R21
+
+    SUBUI   R10, R10, 1
+    BNEZ    R10, f1_loop
+
+    ; -------------------------
+    ; Header F2
+    ; -------------------------
+    ADDUI   R1, R0, 70       ; 'F'
+    PCH     R1
+    ADDUI   R1, R0, 50       ; '2'
+    PCH     R1
+    PCH     R20
+    PCH     R21
+
+    ADDUI   R10, R0, 24
+f2_loop
+    LW      R1, big(R0)
+    PDU     R1
+    PCH     R20
+    PCH     R21
+
+    ; long delay to let downstream path drain fully
+    ADDUI   R11, R0, 255
+f2_d1
+    ADDUI   R12, R0, 255
+f2_d2
+    SUBUI   R12, R12, 1
+    BNEZ    R12, f2_d2
+    SUBUI   R11, R11, 1
+    BNEZ    R11, f2_d1
+
+    SUBUI   R10, R10, 1
+    BNEZ    R10, f2_loop
+
+done
+    J       done

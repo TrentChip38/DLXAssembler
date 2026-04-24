@@ -1,0 +1,640 @@
+.data
+pass_count      1   0
+fail_count      1   0
+last_fail       1   0
+
+mem_a           1   12
+mem_b           1   7
+mem_c           1   0
+mem_d           1   0
+
+.const
+
+.text
+    TSP
+start
+    ; ------------------------------------------------------------
+    ; Clear counters
+    ; ------------------------------------------------------------
+    ADD     R1, R0, R0
+    SW      pass_count(R0), R1
+    SW      fail_count(R0), R1
+    SW      last_fail(R0), R1
+
+    ; ------------------------------------------------------------
+    ; Base constants used throughout
+    ; R10 = 5
+    ; R11 = 7
+    ; R12 = -1
+    ; R13 = 0
+    ; R14 = 2
+    ; R15 = 12
+    ; R16 = 10
+    ; R17 = 3
+    ; R18 = -16
+    ; ------------------------------------------------------------
+    ADDUI   R10, R0, 5
+    ADDUI   R11, R0, 7
+    SUB     R12, R0, R10      ; -5 temporarily
+    ADD     R13, R0, R0
+    ADDUI   R14, R0, 2
+    ADDUI   R15, R0, 12
+    ADDUI   R16, R0, 10
+    ADDUI   R17, R0, 3
+    ADDUI   R18, R0, 16
+    SUB     R18, R0, R18      ; -16
+    ADDUI   R19, R0, 1
+    SUB     R12, R0, R19      ; R12 = -1
+
+    ; ============================================================
+    ; 1. NOP
+    ; ============================================================
+    ADDUI   R22, R0, 1
+    ADD     R20, R10, R0
+    NOP
+    NOP
+    NOP
+    ADD     R21, R10, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 2. LW
+    ; ============================================================
+    ADDUI   R22, R0, 2
+    LW      R20, mem_a(R0)    ; 12
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 3. SW
+    ; ============================================================
+    ADDUI   R22, R0, 3
+    SW      mem_c(R0), R11    ; store 7
+    NOP
+    NOP
+    LW      R20, mem_c(R0)
+    NOP
+    NOP
+    ADDUI   R21, R0, 7
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 4. ADD
+    ; ============================================================
+    ADDUI   R22, R0, 4
+    ADD     R20, R10, R11     ; 5 + 7 = 12
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
+
+
+
+    ; ============================================================
+    ; 6. ADDU
+    ; ============================================================
+    ADDUI   R22, R0, 6
+    ADDU    R20, R10, R11
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
+
+
+
+    ; ============================================================
+    ; 8. SUB
+    ; ============================================================
+    ADDUI   R22, R0, 8
+    SUB     R20, R11, R10     ; 7 - 5 = 2
+    NOP
+    NOP
+    ADDUI   R21, R0, 2
+    NOP
+    NOP
+    JAL     check_equal
+
+
+
+    ; ============================================================
+    ; 10. SUBU
+    ; ============================================================
+    ADDUI   R22, R0, 10
+    SUBU    R20, R11, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 2
+    NOP
+    NOP
+    JAL     check_equal
+
+
+
+    ; ============================================================
+    ; 12. AND
+    ; 10 & 12 = 8
+    ; ============================================================
+    ADDUI   R22, R0, 12
+    AND     R20, R16, R15
+    NOP
+    NOP
+    ADDUI   R21, R0, 8
+    NOP
+    NOP
+    JAL     check_equal
+
+
+    ; ============================================================
+    ; 14. OR
+    ; 10 | 12 = 14
+    ; ============================================================
+    ADDUI   R22, R0, 14
+    OR      R20, R16, R15
+    NOP
+    NOP
+    ADDUI   R21, R0, 14
+    NOP
+    NOP
+    JAL     check_equal
+
+
+
+    ; ============================================================
+    ; 16. XOR
+    ; 10 ^ 12 = 6
+    ; ============================================================
+    ADDUI   R22, R0, 16
+    XOR     R20, R16, R15
+    NOP
+    NOP
+    ADDUI   R21, R0, 6
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 18. SLL
+    ; 3 << 2 = 12
+    ; ============================================================
+    ADDUI   R22, R0, 18
+    SLL     R20, R17, R14
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 19. SLLI
+    ; 3 << 2 = 12
+    ; ============================================================
+    ADDUI   R22, R0, 19
+    SLLI    R20, R17, 2
+    NOP
+    NOP
+    ADDUI   R21, R0, 12
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 20. SRL
+    ; 12 >> 2 = 3
+    ; ============================================================
+    ADDUI   R22, R0, 20
+    SRL     R20, R15, R14
+    NOP
+    NOP
+    ADDUI   R21, R0, 3
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 21. SRLI
+    ; ============================================================
+    ADDUI   R22, R0, 21
+    SRLI    R20, R15, 2
+    NOP
+    NOP
+    ADDUI   R21, R0, 3
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 22. SRA
+    ; -16 >> 2 = -4
+    ; ============================================================
+    ADDUI   R22, R0, 22
+    SRA     R20, R18, R14
+    NOP
+    NOP
+    ADDUI   R21, R0, 4
+    SUB     R21, R0, R21      ; -4
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 23. SRAI
+    ; ============================================================
+    ADDUI   R22, R0, 23
+    SRAI    R20, R18, 2
+    NOP
+    NOP
+    ADDUI   R21, R0, 4
+    SUB     R21, R0, R21
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 24. SLT   (-1 < 5) signed => 1
+    ; ============================================================
+    ADDUI   R22, R0, 24
+    SLT     R20, R12, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 25. SLTI  (-1 < 1) signed => 1
+    ADDUI   R22, R0, 25
+    SLTI    R20, R12, 1
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 26. SLTU  (0xFFFFFFFF < 5) unsigned => 0
+    ADDUI   R22, R0, 26
+    SLTU    R20, R12, R10
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 27. SLTUI (0xFFFFFFFF < 1) unsigned => 0
+    ADDUI   R22, R0, 27
+    SLTUI   R20, R12, 1
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 28. SGT   (-1 > 5) signed => 0
+    ADDUI   R22, R0, 28
+    SGT     R20, R12, R10
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 29. SGTI  (-1 > 1) signed => 0
+    ADDUI   R22, R0, 29
+    SGTI    R20, R12, 1
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 30. SGTU  (0xFFFFFFFF > 5) unsigned => 1
+    ADDUI   R22, R0, 30
+    SGTU    R20, R12, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 31. SGTUI (0xFFFFFFFF > 1) unsigned => 1
+    ADDUI   R22, R0, 31
+    SGTUI   R20, R12, 1
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 32. SLE   (5 <= 5) => 1
+    ADDUI   R22, R0, 32
+    SLE     R20, R10, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 33. SLEI  (-1 <= 1) signed => 1
+    ADDUI   R22, R0, 33
+    SLEI    R20, R12, 1
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 34. SLEU  (5 <= 5) unsigned => 1
+    ADDUI   R22, R0, 34
+    SLEU    R20, R10, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 35. SLEUI (0xFFFFFFFF <= 1) unsigned => 0
+    ADDUI   R22, R0, 35
+    SLEUI   R20, R12, 1
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 36. SGE   (5 >= 5) => 1
+    ADDUI   R22, R0, 36
+    SGE     R20, R10, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 37. SGEI  (-1 >= 1) signed => 0
+    ADDUI   R22, R0, 37
+    SGEI    R20, R12, 1
+    NOP
+    NOP
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 38. SGEU  (5 >= 5) unsigned => 1
+    ADDUI   R22, R0, 38
+    SGEU    R20, R10, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 39. SGEUI (0xFFFFFFFF >= 1) unsigned => 1
+    ADDUI   R22, R0, 39
+    SGEUI   R20, R12, 1
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 40. SEQ   (5 == 5) => 1
+    ADDUI   R22, R0, 40
+    SEQ     R20, R10, R10
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 41. SEQI  (7 == 7) => 1
+    ADDUI   R22, R0, 41
+    SEQI    R20, R11, 7
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 42. SNE   (5 != 7) => 1
+    ADDUI   R22, R0, 42
+    SNE     R20, R10, R11
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; 43. SNEI  (7 != 5) => 1
+    ADDUI   R22, R0, 43
+    SNEI    R20, R11, 5
+    NOP
+    NOP
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 44. BEQZ taken
+    ; ============================================================
+    ADDUI   R22, R0, 44
+    ADD     R20, R0, R0
+    BEQZ    R13, beqz_taken_ok
+    ADDUI   R20, R0, 99
+beqz_taken_ok
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 45. BNEZ taken
+    ; ============================================================
+    ADDUI   R22, R0, 45
+    ADD     R20, R0, R0
+    BNEZ    R10, bnez_taken_ok
+    ADDUI   R20, R0, 99
+bnez_taken_ok
+    ADD     R21, R0, R0
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 46. J
+    ; ============================================================
+    ADDUI   R22, R0, 46
+    ADDUI   R20, R0, 1
+    J       jump_target_46
+    ADDUI   R20, R0, 99
+jump_target_46
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 47. JR
+    ; Verified by normal subroutine return
+    ; ============================================================
+    ADDUI   R22, R0, 47
+    ADDUI   R20, R0, 0
+    JAL     jr_subroutine
+jr_return_47
+    ADDUI   R21, R0, 55
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 48. JAL
+    ; Verified by control transfer into subroutine
+    ; ============================================================
+    ADDUI   R22, R0, 48
+    ADDUI   R20, R0, 0
+    JAL     jal_subroutine
+jal_return_48
+    ADDUI   R21, R0, 66
+    NOP
+    NOP
+    JAL     check_equal
+
+    ; ============================================================
+    ; 49. JALR
+    ; Use R31 from a prior JAL as the target of JALR
+    ; ============================================================
+    ADDUI   R22, R0, 49
+    ADDUI   R20, R0, 1
+    JAL     jalr_entry_49
+jalr_return_49
+    ADDUI   R21, R0, 1
+    NOP
+    NOP
+    JAL     check_equal
+    J       after_jalr_49
+
+jalr_entry_49
+    JALR    R31
+    ADDUI   R20, R0, 99      ; should be skipped
+
+after_jalr_49
+
+    ; ============================================================
+    ; Manual exercise of output / terminal opcodes
+    ; ============================================================
+    ; PCH: print 'A'
+    ADDUI   R1, R0, 65
+    PCH     R1
+
+    ; newline
+    ADDUI   R1, R0, 10
+    PCH     R1
+    ADDUI   R1, R0, 13
+    PCH     R1
+
+    ; ------------------------------------------------------------
+    ; Optional interactive input smoke test
+    ; Uncomment when you want to manually verify GD / GDU
+    ; ------------------------------------------------------------
+
+    ; ------------------------------------------------------------
+    ; Final report: print pass_count, fail_count, last_fail
+    ; ------------------------------------------------------------
+    LW      R1, pass_count(R0)
+    NOP
+    NOP
+    PDU     R1
+
+    ADDUI   R2, R0, 10
+    PCH     R2
+    ADDUI   R2, R0, 13
+    PCH     R2
+
+    LW      R1, fail_count(R0)
+    NOP
+    NOP
+    PDU     R1
+
+    ADDUI   R2, R0, 10
+    PCH     R2
+    ADDUI   R2, R0, 13
+    PCH     R2
+
+    LW      R1, last_fail(R0)
+    NOP
+    NOP
+    PDU     R1
+
+done
+    J      done
+
+; ================================================================
+; Subroutines
+; ================================================================
+
+; check_equal
+; R20 = actual
+; R21 = expected
+; R22 = test id
+check_equal
+    SUB     R23, R20, R21
+    BNEZ    R23, check_fail
+
+check_pass
+    LW      R24, pass_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      pass_count(R0), R24
+    JR      R31
+
+check_fail
+    LW      R24, fail_count(R0)
+    NOP
+    NOP
+    ADDUI   R24, R24, 1
+    NOP
+    NOP
+    SW      fail_count(R0), R24
+    SW      last_fail(R0), R22
+    JR      R31
+
+jr_subroutine
+    ADDUI   R20, R0, 55
+    JR      R31
+
+jal_subroutine
+    ADDUI   R20, R0, 66
+    JR      R31

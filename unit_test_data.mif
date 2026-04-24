@@ -1,0 +1,16 @@
+DEPTH = 1024;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+CONTENT
+BEGIN
+
+000 : 00000000; --pass_count[0]
+001 : 00000000; --fail_count[0]
+002 : 00000000; --last_fail[0]
+003 : 0000000C; --mem_a[0]
+004 : 00000007; --mem_b[0]
+005 : 00000000; --mem_c[0]
+006 : 00000000; --mem_d[0]
+
+END;
